@@ -1,7 +1,7 @@
 import type { ActionDefinition } from '@segment/actions-core'
 import camelCase from 'lodash/camelCase'
 import type { Settings } from '../generated-types'
-import { requestParams } from '../request-params'
+import { setUserPropertiesRequestParams } from '../request-params'
 
 const action: ActionDefinition<Settings> = {
   title: 'Identify User',
@@ -81,8 +81,7 @@ const action: ActionDefinition<Settings> = {
       ...(displayName !== undefined && { displayName: displayName })
     }
 
-    const { url, options } = requestParams(settings).setUserProperties(userId, requestBody)
-
+    const { url, options } = setUserPropertiesRequestParams(settings, userId, requestBody)
     return request(url, options)
   }
 }

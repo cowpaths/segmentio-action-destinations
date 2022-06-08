@@ -1,4 +1,4 @@
-import { requestParams } from '../request-params'
+import { listOperationsRequestParams, setUserPropertiesRequestParams, deleteUserRequestParams } from '../request-params'
 import type { Settings } from '../generated-types'
 
 const regionToBaseUrlMapping: Record<string, string> = {
@@ -18,7 +18,7 @@ describe('requestParams', () => {
   describe('listOperations', () => {
     forEachRegion((settings, baseUrl) => {
       it(`returns expected request params for region ${settings.region}`, () => {
-        const { url, options } = requestParams(settings).listOperations()
+        const { url, options } = listOperationsRequestParams(settings)
         expect(options.method).toBe('get')
         expect(options.headers!['Content-Type']).toBe('application/json')
         expect(options.headers!['Authorization']).toBe(`Basic ${settings.apiKey}`)
@@ -30,7 +30,7 @@ describe('requestParams', () => {
   describe('setUserProperties', () => {
     forEachRegion((settings, baseUrl) => {
       it(`returns expected request params for region ${settings.region}`, () => {
-        const { url, options } = requestParams(settings).setUserProperties(userId, {})
+        const { url, options } = setUserPropertiesRequestParams(settings, userId, {})
         expect(options.method).toBe('post')
         expect(options.headers!['Content-Type']).toBe('application/json')
         expect(options.headers!['Authorization']).toBe(`Basic ${settings.apiKey}`)
@@ -43,7 +43,7 @@ describe('requestParams', () => {
   describe('deleteUser', () => {
     forEachRegion((settings, baseUrl) => {
       it(`returns expected request params for region ${settings.region}`, () => {
-        const { url, options } = requestParams(settings).deleteUser(userId)
+        const { url, options } = deleteUserRequestParams(settings, userId)
         expect(options.method).toBe('delete')
         expect(options.headers!['Content-Type']).toBe('application/json')
         expect(options.headers!['Authorization']).toBe(`Basic ${settings.apiKey}`)

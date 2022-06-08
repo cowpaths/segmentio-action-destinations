@@ -2,7 +2,7 @@ import type { DestinationDefinition } from '@segment/actions-core'
 import { defaultValues } from '@segment/actions-core'
 import type { Settings } from './generated-types'
 import identifyUser from './identifyUser'
-import { requestParams } from './request-params'
+import { listOperationsRequestParams, deleteUserRequestParams } from './request-params'
 
 const destination: DestinationDefinition<Settings> = {
   name: 'Fullstory (Actions)',
@@ -45,13 +45,13 @@ const destination: DestinationDefinition<Settings> = {
     },
 
     testAuthentication: (request, { settings }) => {
-      const { url, options } = requestParams(settings).listOperations()
+      const { url, options } = listOperationsRequestParams(settings)
       return request(url, options)
     }
   },
 
   onDelete: async (request, { settings, payload }) => {
-    const { url, options } = requestParams(settings).deleteUser(payload.userId)
+    const { url, options } = deleteUserRequestParams(settings, payload.userId)
     return request(url, options)
   },
 
