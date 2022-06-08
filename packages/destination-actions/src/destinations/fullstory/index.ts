@@ -45,7 +45,7 @@ const destination: DestinationDefinition<Settings> = {
     },
 
     testAuthentication: (request, { settings }) => {
-      const { url, options } = requestParams(settings).testAuthentication()
+      const { url, options } = requestParams(settings).listOperations()
       return request(url, options)
     }
   },

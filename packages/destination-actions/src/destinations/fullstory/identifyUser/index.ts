@@ -81,7 +81,7 @@ const action: ActionDefinition<Settings> = {
       ...(displayName !== undefined && { displayName: displayName })
     }
 
-    const { url, options } = requestParams(settings).identifyUser(userId, requestBody)
+    const { url, options } = requestParams(settings).setUserProperties(userId, requestBody)
 
     return request(url, options)
   }

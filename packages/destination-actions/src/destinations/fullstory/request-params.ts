@@ -26,9 +26,9 @@ export const requestParams = (settings: Settings) => {
   }
 
   return {
-    testAuthentication: (): RequestParams => defaultRequestParams('operations/v1?limit=1'),
+    listOperations: (): RequestParams => defaultRequestParams('operations/v1?limit=1'),
 
-    identifyUser: (userId: ID, requestBody: Object): RequestParams => {
+    setUserProperties: (userId: ID, requestBody: Object): RequestParams => {
       const defaultParams = defaultRequestParams(`users/v1/individual/${userId}/customvars`)
       return {
         ...defaultParams,
