@@ -30,12 +30,19 @@ describe('requestParams', () => {
   describe('setUserProperties', () => {
     forEachRegion((settings, baseUrl) => {
       it(`returns expected request params for region ${settings.region}`, () => {
-        const { url, options } = setUserPropertiesRequestParams(settings, userId, {})
+        const requestBody = {
+          email: 'some+email@example.com',
+          displayName: 'some-display-name',
+          traits: {
+            trait1: 'some-value'
+          }
+        }
+        const { url, options } = setUserPropertiesRequestParams(settings, userId, requestBody)
         expect(options.method).toBe('post')
         expect(options.headers!['Content-Type']).toBe('application/json')
         expect(options.headers!['Authorization']).toBe(`Basic ${settings.apiKey}`)
         expect(url).toBe(`${baseUrl}/users/v1/individual/${userId}/customvars`)
-        // TODO(nate): Assert against request body
+        expect(options.body).toBe(JSON.stringify(requestBody))
       })
     })
   })
