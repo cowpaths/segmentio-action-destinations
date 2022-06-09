@@ -32,7 +32,7 @@ describe('FullStory', () => {
 
   describe('identifyUser', () => {
     forEachRegion((settings, baseUrl) => {
-      it(`makes expected request for region ${settings.region} with default mapping`, async () => {
+      it(`makes expected request for region ${settings.region} with default mappings`, async () => {
         nock(baseUrl).post(`/users/v1/individual/${userId}/customvars`).reply(200)
         const event = createTestEvent({
           type: 'identify',
@@ -40,7 +40,10 @@ describe('FullStory', () => {
           anonymousId,
           traits: {
             email,
-            displayName
+            displayName,
+            'originally-hyphenated': true,
+            'originally spaced': true,
+            typeSuffixed_str: true
           }
         })
 
@@ -54,12 +57,13 @@ describe('FullStory', () => {
         expect(JSON.parse(response.options.body as string)).toMatchObject({
           segmentAnonymousId_str: anonymousId,
           email,
-          displayName
+          displayName,
+          originallyHyphenated: true,
+          originallySpaced: true,
+          typeSuffixed_str: true
         })
       })
     })
-
-    // TODO(nate): Test custom trait values and camel casing
   })
 
   describe('onDelete', () => {
