@@ -1,13 +1,25 @@
 import type { RequestOptions } from '@segment/actions-core'
 import type { Settings } from './generated-types'
 
+/**
+ * Mirrors the ID type which isn't exported from the @segment/actions-core package root.
+ */
 type ID = string | null | undefined
 
+/**
+ * Parameters intended to be passed into a RequestClient.
+ */
 interface RequestParams {
   url: string
   options: RequestOptions
 }
 
+/**
+ * Returns default {@link RequestParams} suitable for most FullStory HTTP API request.
+ *
+ * @param settings Settings configured for the cloud mode destination.
+ * @param relativeUrl The relative URL from the FullStory API domain.
+ */
 const defaultRequestParams = (settings: Settings, relativeUrl: string): RequestParams => {
   const baseUrl = settings.region === 'europe' ? 'https://api.eu1.fullstory.com' : 'https://api.fullstory.com'
 
@@ -23,9 +35,21 @@ const defaultRequestParams = (settings: Settings, relativeUrl: string): RequestP
   }
 }
 
+/**
+ * Returns the region specific {@link RequestParams} for the list operations HTTP API endpoint.
+ *
+ * @param settings Settings configured for the cloud mode destination.
+ */
 export const listOperationsRequestParams = (settings: Settings): RequestParams =>
   defaultRequestParams(settings, `operations/v1?limit=1`)
 
+/**
+ * Returns the region specific {@link RequestParams} for the set user properties HTTP API endpoint.
+ *
+ * @param settings Settings configured for the cloud mode destination.
+ * @param userId The id of the user to update.
+ * @param requestBody The request body containing user properties to set.
+ */
 export const setUserPropertiesRequestParams = (settings: Settings, userId: ID, requestBody: Object): RequestParams => {
   const defaultParams = defaultRequestParams(settings, `users/v1/individual/${userId}/customvars`)
 
@@ -39,6 +63,12 @@ export const setUserPropertiesRequestParams = (settings: Settings, userId: ID, r
   }
 }
 
+/**
+ * Returns the region specific {@link RequestParams} for the delete user HTTP API endpoint.
+ *
+ * @param settings Settings configured for the cloud mode destination.
+ * @param userId The id of the user to delete.
+ */
 export const deleteUserRequestParams = (settings: Settings, userId: ID): RequestParams => {
   const defaultParams = defaultRequestParams(settings, `users/v1/individual/${userId}`)
 
