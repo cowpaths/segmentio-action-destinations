@@ -1,5 +1,5 @@
 import { listOperationsRequestParams, setUserPropertiesRequestParams, deleteUserRequestParams } from '../request-params'
-import { forEachRegion, anonymousId, displayName, email, userId } from './test-support'
+import { forEachRegion, anonymousId, displayName, email, userId } from './fullstory.test'
 
 describe('requestParams', () => {
   describe('listOperations', () => {
