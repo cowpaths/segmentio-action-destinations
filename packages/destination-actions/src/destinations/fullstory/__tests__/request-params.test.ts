@@ -1,9 +1,9 @@
 import { listOperationsRequestParams, setUserPropertiesRequestParams, deleteUserRequestParams } from '../request-params'
-import { forEachRegion, anonymousId, displayName, email, userId } from './fullstory.test'
+import { forEachDataRegion, anonymousId, displayName, email, userId } from './fullstory.test'
 
 describe('requestParams', () => {
   describe('listOperations', () => {
-    forEachRegion((settings, baseUrl) => {
+    forEachDataRegion((settings, baseUrl) => {
       it(`returns expected request params for region ${settings.region}`, () => {
         const { url, options } = listOperationsRequestParams(settings)
         expect(options.method).toBe('get')
@@ -15,7 +15,7 @@ describe('requestParams', () => {
   })
 
   describe('setUserProperties', () => {
-    forEachRegion((settings, baseUrl) => {
+    forEachDataRegion((settings, baseUrl) => {
       it(`returns expected request params for region ${settings.region}`, () => {
         const requestBody = {
           anonymousId,
@@ -35,7 +35,7 @@ describe('requestParams', () => {
   })
 
   describe('deleteUser', () => {
-    forEachRegion((settings, baseUrl) => {
+    forEachDataRegion((settings, baseUrl) => {
       it(`returns expected request params for region ${settings.region}`, () => {
         const { url, options } = deleteUserRequestParams(settings, userId)
         expect(options.method).toBe('delete')

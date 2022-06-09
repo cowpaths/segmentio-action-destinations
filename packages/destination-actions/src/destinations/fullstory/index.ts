@@ -3,6 +3,7 @@ import { defaultValues } from '@segment/actions-core'
 import type { Settings } from './generated-types'
 import identifyUser from './identifyUser'
 import { listOperationsRequestParams, deleteUserRequestParams } from './request-params'
+import { dataRegions } from './data-regions'
 
 const destination: DestinationDefinition<Settings> = {
   name: 'Fullstory (Actions)',
@@ -30,17 +31,11 @@ const destination: DestinationDefinition<Settings> = {
         description: 'The region where your FullStory organization is provisioned.',
         type: 'string',
         format: 'text',
-        choices: [
-          {
-            label: 'North America',
-            value: 'north_america'
-          },
-          {
-            label: 'Europe',
-            value: 'europe'
-          }
-        ],
-        default: 'north_america'
+        choices: Object.keys(dataRegions).map((region) => ({
+          label: dataRegions[region].label,
+          value: region
+        })),
+        default: dataRegions.north_america.value
       }
     },
 
