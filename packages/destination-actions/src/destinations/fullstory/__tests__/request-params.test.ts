@@ -1,23 +1,5 @@
 import { listOperationsRequestParams, setUserPropertiesRequestParams, deleteUserRequestParams } from '../request-params'
-import type { Settings } from '../generated-types'
-
-const regionToBaseUrlMapping: Record<string, string> = {
-  north_america: 'https://api.fullstory.com',
-  europe: 'https://api.eu1.fullstory.com'
-}
-
-const apiKey = 'fake-api-key'
-const userId = 'fake-user-id'
-const anonymousId = 'fake-anonymous-id'
-const traits = {
-  displayName: 'fake-display-name',
-  email: 'fake+email@example.com'
-}
-
-// TODO(nate): Extract common test helper logic
-const forEachRegion = (callback: (settings: Settings, baseUrl: string) => void) => {
-  Object.keys(regionToBaseUrlMapping).forEach((region) => callback({ apiKey, region }, regionToBaseUrlMapping[region]))
-}
+import { forEachRegion, anonymousId, displayName, email, userId } from './test-support'
 
 describe('requestParams', () => {
   describe('listOperations', () => {
@@ -37,7 +19,10 @@ describe('requestParams', () => {
       it(`returns expected request params for region ${settings.region}`, () => {
         const requestBody = {
           anonymousId,
-          traits
+          traits: {
+            displayName,
+            email
+          }
         }
         const { url, options } = setUserPropertiesRequestParams(settings, userId, requestBody)
         expect(options.method).toBe('post')

@@ -73,8 +73,7 @@ const action: ActionDefinition<Settings> = {
       newTraits.segmentAnonymousId_str = anonymousId
     }
 
-    // TODO(nate): Can we include an event source like we do with the equivalent
-    // device/browser mode action via segmentEventSource ("segment-browser-actions")
+    // TODO(nate): Include a source value once the HTTP API is updated to support it
     const requestBody = {
       ...newTraits,
       ...(email !== undefined && { email: email }),

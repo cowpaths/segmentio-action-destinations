@@ -1,24 +1,9 @@
 import nock from 'nock'
 import { createTestEvent, createTestIntegration } from '@segment/actions-core'
 import Definition from '../index'
-import type { Settings } from '../generated-types'
+import { forEachRegion, userId, anonymousId, email, displayName } from './test-support'
 
 const testDestination = createTestIntegration(Definition)
-
-const regionToBaseUrlMapping: Record<string, string> = {
-  north_america: 'https://api.fullstory.com',
-  europe: 'https://api.eu1.fullstory.com'
-}
-
-const apiKey = 'fake-api-key'
-const userId = 'fake-user-id'
-const anonymousId = 'fake-anonymous-id'
-const email = 'fake+email@example.com'
-const displayName = 'fake-display-name'
-
-const forEachRegion = (callback: (settings: Settings, baseUrl: string) => void) => {
-  Object.keys(regionToBaseUrlMapping).forEach((region) => callback({ apiKey, region }, regionToBaseUrlMapping[region]))
-}
 
 describe('FullStory', () => {
   describe('testAuthentication', () => {
