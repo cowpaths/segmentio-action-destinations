@@ -8,6 +8,11 @@ const regionToBaseUrlMapping: Record<string, string> = {
 
 const apiKey = 'fake-api-key'
 const userId = 'fake-user-id'
+const anonymousId = 'fake-anonymous-id'
+const traits = {
+  displayName: 'fake-display-name',
+  email: 'fake+email@example.com'
+}
 
 // TODO(nate): Extract common test helper logic
 const forEachRegion = (callback: (settings: Settings, baseUrl: string) => void) => {
@@ -31,11 +36,8 @@ describe('requestParams', () => {
     forEachRegion((settings, baseUrl) => {
       it(`returns expected request params for region ${settings.region}`, () => {
         const requestBody = {
-          email: 'some+email@example.com',
-          displayName: 'some-display-name',
-          traits: {
-            trait1: 'some-value'
-          }
+          anonymousId,
+          traits
         }
         const { url, options } = setUserPropertiesRequestParams(settings, userId, requestBody)
         expect(options.method).toBe('post')

@@ -1,5 +1,5 @@
 import nock from 'nock'
-import { createTestIntegration } from '@segment/actions-core'
+import { createTestEvent, createTestIntegration } from '@segment/actions-core'
 import Definition from '../index'
 import type { Settings } from '../generated-types'
 
@@ -12,6 +12,9 @@ const regionToBaseUrlMapping: Record<string, string> = {
 
 const apiKey = 'fake-api-key'
 const userId = 'fake-user-id'
+const anonymousId = 'fake-anonymous-id'
+const email = 'fake+email@example.com'
+const displayName = 'fake-display-name'
 
 const forEachRegion = (callback: (settings: Settings, baseUrl: string) => void) => {
   Object.keys(regionToBaseUrlMapping).forEach((region) => callback({ apiKey, region }, regionToBaseUrlMapping[region]))
@@ -20,7 +23,7 @@ const forEachRegion = (callback: (settings: Settings, baseUrl: string) => void) 
 describe('FullStory', () => {
   describe('testAuthentication', () => {
     forEachRegion((settings, baseUrl) => {
-      it(`succeeds for region ${settings.region}`, async () => {
+      it(`makes expected request for region ${settings.region}`, async () => {
         nock(baseUrl).get('/operations/v1?limit=1').reply(200)
         await expect(testDestination.testAuthentication(settings)).resolves.not.toThrowError()
       })
@@ -28,12 +31,40 @@ describe('FullStory', () => {
   })
 
   describe('identifyUser', () => {
-    // TODO(nate): Assert against perform and related logic, including camel casing properties
+    forEachRegion((settings, baseUrl) => {
+      it(`makes expected request for region ${settings.region} with default mapping`, async () => {
+        nock(baseUrl).post(`/users/v1/individual/${userId}/customvars`).reply(200)
+        const event = createTestEvent({
+          type: 'identify',
+          userId,
+          anonymousId,
+          traits: {
+            email,
+            displayName
+          }
+        })
+
+        const [response] = await testDestination.testAction('identifyUser', {
+          settings,
+          event,
+          useDefaultMappings: true
+        })
+
+        expect(response.status).toBe(200)
+        expect(JSON.parse(response.options.body as string)).toMatchObject({
+          segmentAnonymousId_str: anonymousId,
+          email,
+          displayName
+        })
+      })
+    })
+
+    // TODO(nate): Test custom trait values and camel casing
   })
 
   describe('onDelete', () => {
     forEachRegion((settings, baseUrl) => {
-      it(`succeeds for region ${settings.region}`, async () => {
+      it(`makes expected request for region ${settings.region}`, async () => {
         nock(baseUrl).delete(`/users/v1/individual/${userId}`).reply(200)
         const jsonSettings = {
           apiKey: settings.apiKey,
