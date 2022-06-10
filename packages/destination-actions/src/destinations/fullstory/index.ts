@@ -32,7 +32,8 @@ const destination: DestinationDefinition<Settings> = {
         type: 'string',
         format: 'text',
         choices: dataRegions,
-        default: 'north_america'
+        default: 'north_america',
+        required: true
       }
     },
 

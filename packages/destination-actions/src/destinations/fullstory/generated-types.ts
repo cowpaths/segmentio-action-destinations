@@ -8,5 +8,5 @@ export interface Settings {
   /**
    * The region where your FullStory organization is provisioned.
    */
-  region?: string
+  region: string
 }

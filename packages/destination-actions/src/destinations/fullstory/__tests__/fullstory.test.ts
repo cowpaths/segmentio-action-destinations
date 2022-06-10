@@ -68,7 +68,7 @@ describe('FullStory', () => {
         nock(baseUrl).delete(`/users/v1/individual/${userId}`).reply(200)
         const jsonSettings = {
           apiKey: settings.apiKey,
-          region: settings.region!
+          region: settings.region
         }
         await expect(testDestination.onDelete!({ type: 'delete', userId }, jsonSettings)).resolves.not.toThrowError()
       })
