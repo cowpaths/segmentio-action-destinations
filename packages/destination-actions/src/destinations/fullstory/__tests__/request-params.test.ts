@@ -6,7 +6,8 @@ const forEachDataRegionPlusFakeValues = (
   callback: (settings: Settings, baseUrl: string, isValidRegion: boolean) => void
 ) => {
   forEachDataRegion((settings, baseUrl) => callback(settings, baseUrl, true))
-  ;['', 'fake'].forEach((fakeRegion) => callback({ apiKey, region: fakeRegion }, 'fake-base-url', false))
+  const fakeDataRegions = ['', 'fake']
+  fakeDataRegions.forEach((fakeRegion) => callback({ apiKey, region: fakeRegion }, 'fake-base-url', false))
 }
 
 describe('requestParams', () => {
