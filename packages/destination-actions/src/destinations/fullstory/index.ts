@@ -31,11 +31,8 @@ const destination: DestinationDefinition<Settings> = {
         description: 'The region where your FullStory organization is provisioned.',
         type: 'string',
         format: 'text',
-        choices: Object.keys(dataRegions).map((region) => ({
-          label: dataRegions[region].label,
-          value: region
-        })),
-        default: dataRegions.north_america.value
+        choices: dataRegions,
+        default: 'north_america'
       }
     },
 

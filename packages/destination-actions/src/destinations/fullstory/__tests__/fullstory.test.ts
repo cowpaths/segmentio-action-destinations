@@ -11,7 +11,7 @@ export const email = 'fake+email@example.com'
 export const displayName = 'fake-display-name'
 
 export const forEachDataRegion = (callback: (settings: Settings, baseUrl: string) => void) => {
-  Object.keys(dataRegions).forEach((region) => callback({ apiKey, region }, dataRegions[region].baseUrl))
+  dataRegions.forEach((region) => callback({ apiKey, region: region.value }, region.baseUrl))
 }
 
 const testDestination = createTestIntegration(Definition)
