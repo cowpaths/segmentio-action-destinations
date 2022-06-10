@@ -4,7 +4,7 @@ import Definition from '../index'
 import type { Settings } from '../generated-types'
 import { dataRegions } from '../data-regions'
 
-const apiKey = 'fake-api-key'
+export const apiKey = 'fake-api-key'
 export const userId = 'fake-user-id'
 export const anonymousId = 'fake-anonymous-id'
 export const email = 'fake+email@example.com'
