@@ -41,6 +41,9 @@ const destination: DestinationDefinition<Settings> = {
   },
 
   onDelete: async (request, { settings, payload }) => {
+    if (payload.userId === null || payload.userId === undefined) {
+      return
+    }
     const { url, options } = deleteUserRequestParams(settings, payload.userId)
     return request(url, options)
   },

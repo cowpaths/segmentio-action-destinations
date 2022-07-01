@@ -3,7 +3,8 @@ import { createTestEvent, createTestIntegration } from '@segment/actions-core'
 import Definition from '../index'
 
 export const apiKey = 'fake-api-key'
-export const userId = 'fake-user-id'
+export const userId = 'fake/user/id'
+export const urlEncodedUserId = encodeURIComponent(userId)
 export const anonymousId = 'fake-anonymous-id'
 export const email = 'fake+email@example.com'
 export const displayName = 'fake-display-name'
@@ -22,7 +23,7 @@ describe('FullStory', () => {
 
   describe('trackEvent', () => {
     it('makes expected request with default mappings', async () => {
-      nock(baseUrl).post(`/users/v1/individual/${userId}/customevent`).reply(200)
+      nock(baseUrl).post(`/users/v1/individual/${urlEncodedUserId}/customevent`).reply(200)
       const eventName = 'test-event'
 
       const properties = {
@@ -73,7 +74,7 @@ describe('FullStory', () => {
     })
 
     it('handles undefined event values', async () => {
-      nock(baseUrl).post(`/users/v1/individual/${userId}/customevent`).reply(200)
+      nock(baseUrl).post(`/users/v1/individual/${urlEncodedUserId}/customevent`).reply(200)
       const eventName = 'test-event'
 
       const event = createTestEvent({
@@ -101,7 +102,7 @@ describe('FullStory', () => {
 
   describe('identifyUser', () => {
     it('makes expected request with default mappings', async () => {
-      nock(baseUrl).post(`/users/v1/individual/${userId}/customvars`).reply(200)
+      nock(baseUrl).post(`/users/v1/individual/${urlEncodedUserId}/customvars`).reply(200)
       const event = createTestEvent({
         type: 'identify',
         userId,
@@ -135,7 +136,7 @@ describe('FullStory', () => {
 
   describe('onDelete', () => {
     it('makes expected request', async () => {
-      nock(baseUrl).delete(`/users/v1/individual/${userId}`).reply(200)
+      nock(baseUrl).delete(`/users/v1/individual/${urlEncodedUserId}`).reply(200)
       await expect(testDestination.onDelete!({ type: 'delete', userId }, settings)).resolves.not.toThrowError()
     })
   })
