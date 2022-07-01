@@ -122,8 +122,7 @@ describe('FullStory', () => {
       })
 
       expect(response.status).toBe(200)
-      // TODO(nate): Consider using .toEqual for full deep equality verification
-      expect(JSON.parse(response.options.body as string)).toMatchObject({
+      expect(JSON.parse(response.options.body as string)).toEqual({
         segmentAnonymousId_str: anonymousId,
         email,
         displayName,
