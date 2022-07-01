@@ -41,10 +41,8 @@ describe('requestParams', () => {
           event_name: requestValues.eventName,
           event_data: requestValues.eventData,
           timestamp: requestValues.timestamp,
-          session: {
-            use_recent_session: requestValues.useRecentSession,
-            session_url: requestValues.sessionUrl
-          }
+          use_recent_session: requestValues.useRecentSession,
+          session_url: requestValues.sessionUrl
         }
       })
     })

@@ -77,14 +77,11 @@ export const customEventRequestParams = (
   }
 
   if (useRecentSession !== undefined) {
-    requestBody.event.session = {
-      use_recent_session: useRecentSession
-    }
+    requestBody.event.use_recent_session = useRecentSession
   }
 
   if (sessionUrl) {
-    requestBody.event.session = requestBody.event.session || {}
-    requestBody.event.session.session_url = sessionUrl
+    requestBody.event.session_url = sessionUrl
   }
 
   return {

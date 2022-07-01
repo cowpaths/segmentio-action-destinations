@@ -65,10 +65,8 @@ describe('FullStory', () => {
           event_name: eventName,
           event_data: properties,
           timestamp,
-          session: {
-            use_recent_session: properties.useRecentSession,
-            session_url: properties.sessionUrl
-          }
+          use_recent_session: properties.useRecentSession,
+          session_url: properties.sessionUrl
         }
       })
     })
