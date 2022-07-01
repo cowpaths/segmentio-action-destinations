@@ -30,8 +30,6 @@ const defaultRequestParams = (settings: Settings, relativeUrl: string): RequestP
   }
 }
 
-// TODO(nate): Remove "region specific" comments
-
 /**
  * Returns {@link RequestParams} for the list operations HTTP API endpoint.
  *
