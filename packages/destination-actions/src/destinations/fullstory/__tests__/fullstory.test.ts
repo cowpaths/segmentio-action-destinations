@@ -1,5 +1,5 @@
 import nock from 'nock'
-import { createTestEvent, createTestIntegration } from '@segment/actions-core'
+import { createTestEvent, createTestIntegration, IntegrationError } from '@segment/actions-core'
 import Definition from '../index'
 
 export const apiKey = 'fake-api-key'
@@ -135,9 +135,18 @@ describe('FullStory', () => {
   })
 
   describe('onDelete', () => {
-    it('makes expected request', async () => {
+    const falsyUserIds = ['', undefined, null]
+    it('makes expected request given a valid user id', async () => {
       nock(baseUrl).delete(`/users/v1/individual/${urlEncodedUserId}`).reply(200)
       await expect(testDestination.onDelete!({ type: 'delete', userId }, settings)).resolves.not.toThrowError()
+    })
+
+    falsyUserIds.forEach((falsyUserId) => {
+      it(`it throws IntegrationError given falsy user id ${falsyUserId}`, async () => {
+        await expect(testDestination.onDelete!({ type: 'delete', userId: falsyUserId }, settings)).rejects.toThrowError(
+          new IntegrationError('User Id is required for user deletion.')
+        )
+      })
     })
   })
 })
