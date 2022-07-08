@@ -66,7 +66,6 @@ const isKnownTypeSuffix = (suffix: string) => !!typeValidators[suffix]
  * Camel cases `.`, `-`, `_`, and white space within property names. Preserves type suffix casing.
  *
  * NOTE: Does not fix otherwise malformed fieldNames.
- * FullStory will scrub characters from keys that do not conform to /^[a-zA-Z][a-zA-Z0-9_]*$/.
  *
  * @param {string} name
  */
