@@ -114,9 +114,10 @@ describe('FullStory', () => {
         traits: {
           email,
           name: displayName,
-          'originally-hyphenated': true,
+          'originally-hyphenated': 'some string',
           'originally spaced': true,
-          typeSuffixed_str: true
+          typeSuffixed_bool: true,
+          'originally.dotted': 1.23
         }
       })
 
@@ -134,9 +135,10 @@ describe('FullStory', () => {
         email_str: email,
         displayName,
         name_str: displayName,
-        originallyHyphenated_bool: true,
+        originallyHyphenated_str: 'some string',
         originallySpaced_bool: true,
-        typeSuffixed_str: true
+        typeSuffixed_bool: true,
+        originallyDotted_real: 1.23
       })
     })
   })
