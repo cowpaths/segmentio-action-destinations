@@ -1,4 +1,4 @@
-import { normalizeVarNames } from '../vars'
+import { normalizePropertyNames } from '../vars'
 
 const suffixToExampleValuesMap: Record<string, any[]> = {
   str: ['some string'],
@@ -16,17 +16,17 @@ suffixToExampleValuesMap.ints = [suffixToExampleValuesMap.int]
 suffixToExampleValuesMap.dates = [suffixToExampleValuesMap.date]
 suffixToExampleValuesMap.objs = [suffixToExampleValuesMap.obj]
 
-describe('normalizeVarNames', () => {
+describe('normalizePropertyNames', () => {
   it('does not add type suffix for undefined values', () => {
     const obj = {
       someProp: undefined
     }
-    const normalizedObj = normalizeVarNames(obj)
+    const normalizedObj = normalizePropertyNames(obj)
     expect(normalizedObj).toEqual(obj)
   })
 
   it('returns empty object given undefined object', () => {
-    expect(normalizeVarNames(undefined)).toEqual({})
+    expect(normalizePropertyNames(undefined)).toEqual({})
   })
 
   it('does not add type suffix if known type suffix is present', () => {
@@ -36,7 +36,7 @@ describe('normalizeVarNames', () => {
         obj[`prop${index}_${suffix}`] = value
       })
     })
-    const normalizedObj = normalizeVarNames(obj)
+    const normalizedObj = normalizePropertyNames(obj)
     expect(normalizedObj).toEqual(obj)
   })
 
@@ -73,7 +73,7 @@ describe('normalizeVarNames', () => {
       dates_prop_dates: obj.dates_prop,
       objs_prop_objs: obj.objs_prop
     }
-    const actual = normalizeVarNames(obj)
+    const actual = normalizePropertyNames(obj)
     expect(actual).toEqual(expected)
   })
 
@@ -94,7 +94,7 @@ describe('normalizeVarNames', () => {
       dottedDate_date: obj['dotted.date'],
       spacedReal_real: obj['spaced real']
     }
-    const actual = normalizeVarNames(obj, { camelCase: true })
+    const actual = normalizePropertyNames(obj, { camelCase: true })
     expect(actual).toEqual(expected)
   })
 })

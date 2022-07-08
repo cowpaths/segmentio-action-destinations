@@ -1,7 +1,7 @@
 import type { ActionDefinition } from '@segment/actions-core'
 import type { Settings } from '../generated-types'
 import { setUserPropertiesRequestParams } from '../request-params'
-import { normalizeVarNames } from '../vars'
+import { normalizePropertyNames } from '../vars'
 
 const action: ActionDefinition<Settings> = {
   title: 'Identify User',
@@ -58,7 +58,7 @@ const action: ActionDefinition<Settings> = {
   perform: (request, { payload, settings }) => {
     const { traits, anonymousId, userId, email, displayName } = payload
 
-    const normalizedTraits = normalizeVarNames(traits, { camelCase: true })
+    const normalizedTraits = normalizePropertyNames(traits, { camelCase: true })
 
     if (anonymousId) {
       normalizedTraits.segmentAnonymousId_str = anonymousId

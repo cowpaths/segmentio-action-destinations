@@ -34,14 +34,9 @@ const isArrayOf = (f: (val: any) => boolean) => {
   }
 }
 
-const isObject = (x: any) => {
-  if (!x) {
-    return false
-  }
-  return typeof x === 'object'
-}
+const isObject = (x: any) => x && typeof x === 'object'
 
-const varTypeValidators: Readonly<Record<string, (_: any) => boolean>> = {
+const typeValidators: Readonly<Record<string, (_: any) => boolean>> = {
   str: isString,
   bool: isBool,
   real: isReal,
@@ -57,30 +52,30 @@ const varTypeValidators: Readonly<Record<string, (_: any) => boolean>> = {
 }
 
 const inferType = (value: any) => {
-  for (const t in varTypeValidators) {
-    if (varTypeValidators[t](value)) {
+  for (const t in typeValidators) {
+    if (typeValidators[t](value)) {
       return t
     }
   }
   return null
 }
 
-const isKnownTypeSuffix = (suffix: string) => !!varTypeValidators[suffix]
+const isKnownTypeSuffix = (suffix: string) => !!typeValidators[suffix]
 
 /**
- * Camel cases `.`, `-`, `_`, and white space within var names. Preserves type suffix casing.
+ * Camel cases `.`, `-`, `_`, and white space within property names. Preserves type suffix casing.
  *
  * NOTE: Does not fix otherwise malformed fieldNames.
  * FullStory will scrub characters from keys that do not conform to /^[a-zA-Z][a-zA-Z0-9_]*$/.
  *
  * @param {string} name
  */
-const camelCaseVarName = (name: string) => {
+const camelCasePropertyName = (name: string) => {
   // Do not camel case known type suffixes.
   const parts = name.split('_')
   if (parts.length > 1) {
     const typeSuffix = parts.pop()
-    if (typeSuffix && varTypeValidators[typeSuffix]) {
+    if (typeSuffix && typeValidators[typeSuffix]) {
       return camelCase(parts.join('_')) + '_' + typeSuffix
     }
   }
@@ -89,49 +84,57 @@ const camelCaseVarName = (name: string) => {
   return camelCase(name)
 }
 
-const typeSuffixVarName = (name: string, value: unknown) => {
+const typeSuffixPropertyName = (name: string, value: unknown) => {
   const valueTypeName = typeof value
 
   if (valueTypeName === 'undefined') {
-    // We can't infer the variable type for undefined values
+    // We can't infer the type for undefined values
     return name
   }
 
-  let lastUnderscore = name.lastIndexOf('_')
+  const lastUnderscore = name.lastIndexOf('_')
 
   if (lastUnderscore === -1 || !isKnownTypeSuffix(name.substring(lastUnderscore + 1))) {
     // Either no type suffix or the name contains an underscore with an unknown suffix.
     const maybeType = inferType(value)
     if (maybeType === null) {
-      // We can't infer the type. Don't change the var name.
+      // We can't infer the type. Don't change the property name.
       return name
     }
 
-    lastUnderscore = name.length
-    // TODO(nate): Consider further validation on name.
     return `${name}_${maybeType}`
   }
 
   return name
 }
 
-export const normalizeVarNames = (obj?: {}, options?: { camelCase?: boolean }): Record<string, unknown> => {
+/**
+ * Normalizes first level property names according to FullStory API custom var expectations. Type suffixes
+ * will be added to first level property names when a known type suffix isn't present and the type can be
+ * inferred. First level property names will also be camel cased if specified, preserving any known type
+ * suffixes.
+ *
+ * @param obj The source object.
+ * @param options Extended normalization options, including whether to camel case property names.
+ * @returns A new object with first level property names normalized.
+ */
+export const normalizePropertyNames = (obj?: {}, options?: { camelCase?: boolean }): Record<string, unknown> => {
   if (!obj) {
     return {}
   }
 
-  const normalizeVarName = (name: string, value: unknown) => {
+  const normalizePropertyName = (name: string, value: unknown) => {
     let transformedName = name
     if (options?.camelCase) {
-      transformedName = camelCaseVarName(name)
+      transformedName = camelCasePropertyName(name)
     }
-    return typeSuffixVarName(transformedName, value)
+    return typeSuffixPropertyName(transformedName, value)
   }
 
   return Object.entries(obj).reduce(
     (acc, [key, value]) => ({
       ...acc,
-      [normalizeVarName(key, value)]: value
+      [normalizePropertyName(key, value)]: value
     }),
     {}
   )
