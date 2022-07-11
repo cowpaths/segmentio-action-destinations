@@ -3,6 +3,8 @@ import { normalizePropertyNames } from '../vars'
 const suffixToExampleValuesMap: Record<string, any[]> = {
   str: ['some string'],
   bool: [true, false],
+  // We include an int value with real example values since real will always be preferred when inferring
+  // custom var types from values.
   real: [1, 1.23],
   int: [1],
   date: [new Date()],
