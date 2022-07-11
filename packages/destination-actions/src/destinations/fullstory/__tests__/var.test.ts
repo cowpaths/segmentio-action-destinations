@@ -3,10 +3,10 @@ import { normalizePropertyNames } from '../vars'
 const suffixToExampleValuesMap: Record<string, any[]> = {
   str: ['some string'],
   bool: [true, false],
-  real: [1.23],
+  real: [1, 1.23],
   int: [1],
   date: [new Date()],
-  obj: [{}]
+  obj: [{}, { secondLevelProp: 'some value' }]
 }
 
 suffixToExampleValuesMap.strs = [suffixToExampleValuesMap.str]
@@ -45,10 +45,12 @@ describe('normalizePropertyNames', () => {
       string_prop: suffixToExampleValuesMap.str[0],
       bool_prop1: suffixToExampleValuesMap.bool[0],
       bool_prop2: suffixToExampleValuesMap.bool[1],
-      real_prop: suffixToExampleValuesMap.real[0],
+      real_prop1: suffixToExampleValuesMap.real[0],
+      real_prop2: suffixToExampleValuesMap.real[1],
       int_prop: suffixToExampleValuesMap.int[0],
       date_prop: suffixToExampleValuesMap.date[0],
-      obj_prop: suffixToExampleValuesMap.obj[0],
+      obj_prop1: suffixToExampleValuesMap.obj[0],
+      obj_prop2: suffixToExampleValuesMap.obj[1],
       strs_prop: suffixToExampleValuesMap.strs[0],
       bools_prop: suffixToExampleValuesMap.bools[0],
       reals_prop: suffixToExampleValuesMap.reals[0],
@@ -60,12 +62,14 @@ describe('normalizePropertyNames', () => {
       string_prop_str: obj.string_prop,
       bool_prop1_bool: obj.bool_prop1,
       bool_prop2_bool: obj.bool_prop2,
-      real_prop_real: obj.real_prop,
-      // This seems counter-intuitive, but this matches the FullStory client API behavior which prefers reals
-      // over ints to avoid inconsistent type inference.
+      real_prop1_real: obj.real_prop1,
+      real_prop2_real: obj.real_prop2,
+      // This may seem counter-intuitive, but this matches the FullStory client API behavior which prefers
+      // reals over ints to avoid inconsistent type inference.
       int_prop_real: obj.int_prop,
       date_prop_date: obj.date_prop,
-      obj_prop_obj: obj.obj_prop,
+      obj_prop1_obj: obj.obj_prop1,
+      obj_prop2_obj: obj.obj_prop2,
       strs_prop_strs: obj.strs_prop,
       bools_prop_bools: obj.bools_prop,
       reals_prop_reals: obj.reals_prop,

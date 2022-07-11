@@ -14,8 +14,6 @@ const isDate = (x: any) => {
   }
   if (x.constructor === Date) {
     return !isNaN(x as any)
-  } else if (typeof x === 'number' || typeof x === 'string') {
-    return !isNaN(new Date(x) as any)
   }
   return false
 }
@@ -40,6 +38,8 @@ const typeValidators: Readonly<Record<string, (_: any) => boolean>> = {
   str: isString,
   bool: isBool,
   real: isReal,
+  // Even though we won't infer an int type suffix since real will be preferred, we maintain int and
+  // ints in this map since keys are also used to check for known type suffixes which we preserve.
   int: isInt,
   date: isDate,
   strs: isArrayOf(isString),
