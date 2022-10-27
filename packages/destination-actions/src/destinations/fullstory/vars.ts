@@ -107,6 +107,19 @@ const typeSuffixPropertyName = (name: string, value: unknown) => {
   return name
 }
 
+const invalidPropertyNameCharRegex = /[^A-Za-z0-9_]/g
+
+const stripUnsupportedCharsFromPropertyName = (name: string) => {
+  const parts = name.split('_')
+  if (parts.length > 1) {
+    const typeSuffix = parts.pop()
+    if (typeSuffix) {
+      return parts.join('_').replace(invalidPropertyNameCharRegex, '') + `_${typeSuffix}`
+    }
+  }
+  return name.replace(invalidPropertyNameCharRegex, '')
+}
+
 /**
  * Normalizes first level property names according to FullStory API custom var expectations. Type suffixes
  * will be added to first level property names when a known type suffix isn't present and the type can be
@@ -127,6 +140,7 @@ export const normalizePropertyNames = (obj?: {}, options?: { camelCase?: boolean
     if (options?.camelCase) {
       transformedName = camelCasePropertyName(name)
     }
+    transformedName = stripUnsupportedCharsFromPropertyName(transformedName)
     return typeSuffixPropertyName(transformedName, value)
   }
 
