@@ -62,34 +62,6 @@ const inferType = (value: any) => {
 
 const isKnownTypeSuffix = (suffix: string) => !!typeValidators[suffix]
 
-/**
- * Applies a given transformation to a property name, preserving any known type suffixes.
- *
- * @param name The full original property name
- * @param transform The transform which will be applied to the original property name
- * @returns The transformed property name, preserving any known type suffixes.
- */
-const transformPropertyName = (name: string, transform: (original: string) => string): string => {
-  const parts = name.split('_')
-  if (parts.length > 1) {
-    const typeSuffix = parts.pop()
-    if (typeSuffix && typeValidators[typeSuffix]) {
-      return transform(parts.join('_')) + `_${typeSuffix}`
-    }
-  }
-
-  return transform(name)
-}
-
-/**
- * Camel cases `.`, `-`, `_`, and white space within property names. Preserves type suffix casing.
- *
- * NOTE: Does not fix otherwise malformed fieldNames.
- *
- * @param {string} name
- */
-const camelCasePropertyName = (name: string) => transformPropertyName(name, camelCase)
-
 const invalidPropertyNameCharRegex = /[^A-Za-z0-9_]/g
 
 /**
@@ -100,10 +72,7 @@ const invalidPropertyNameCharRegex = /[^A-Za-z0-9_]/g
  * @returns The property name excluding any unsupported characters
  */
 const stripUnsupportedCharsFromPropertyName = (name: string) => {
-  const transform = (original: string) => {
-    return original.replace(invalidPropertyNameCharRegex, '')
-  }
-  return transformPropertyName(name, transform)
+  return name.replace(invalidPropertyNameCharRegex, '')
 }
 
 const typeSuffixPropertyName = (name: string, value: unknown) => {
@@ -130,11 +99,38 @@ const typeSuffixPropertyName = (name: string, value: unknown) => {
   return name
 }
 
+type PropertyNameTransformation = (_: string) => string
+
+/**
+ * Applies given transformation to a property name, preserving any known type suffixes.
+ *
+ * @param name The full original property name
+ * @param transformations The transformations which will be applied to the original property name
+ * @returns The transformed property name, preserving any known type suffixes.
+ */
+const transformPropertyName = (name: string, transformations: PropertyNameTransformation[]) => {
+  const parts = name.split('_')
+
+  const transform = (original: string) =>
+    transformations.reduce((target, transformation) => {
+      return transformation(target)
+    }, original)
+
+  if (parts.length > 1) {
+    const typeSuffix = parts.pop()
+    if (typeSuffix && typeValidators[typeSuffix]) {
+      return transform(parts.join('_')) + `_${typeSuffix}`
+    }
+  }
+
+  return transform(name)
+}
+
 /**
  * Normalizes first level property names according to FullStory API custom var expectations. Type suffixes
  * will be added to first level property names when a known type suffix isn't present and the type can be
  * inferred. First level property names will also be camel cased if specified, preserving any known type
- * suffixes.
+ * suffixes. Finally, any supported characters will be stripped from property names.
  *
  * @param obj The source object.
  * @param options Extended normalization options, including whether to camel case property names.
@@ -145,12 +141,14 @@ export const normalizePropertyNames = (obj?: {}, options?: { camelCase?: boolean
     return {}
   }
 
+  const transformations: PropertyNameTransformation[] = []
+  if (options?.camelCase) {
+    transformations.push(camelCase)
+  }
+  transformations.push(stripUnsupportedCharsFromPropertyName)
+
   const normalizePropertyName = (name: string, value: unknown) => {
-    let transformedName = name
-    if (options?.camelCase) {
-      transformedName = camelCasePropertyName(name)
-    }
-    transformedName = stripUnsupportedCharsFromPropertyName(transformedName)
+    const transformedName = transformPropertyName(name, transformations)
     return typeSuffixPropertyName(transformedName, value)
   }
 
