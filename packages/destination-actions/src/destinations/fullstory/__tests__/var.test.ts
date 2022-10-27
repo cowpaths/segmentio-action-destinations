@@ -107,7 +107,7 @@ describe('normalizePropertyNames', () => {
   const unsupportedPropertyNameChars = [' ', '.', '-', ':']
 
   unsupportedPropertyNameChars.forEach((char) => {
-    it(`strips unsupported char '${char}' from property nama`, () => {
+    it(`strips unsupported char '${char}' from property name`, () => {
       const originalNameIncludingTypeSuffix = `type${char}_suffixed${char}${char}_property_str`
       const expectedNamePreservingTypeSuffix = 'type_suffixed_property_str'
 
