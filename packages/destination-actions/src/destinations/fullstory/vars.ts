@@ -130,7 +130,7 @@ const transformPropertyName = (name: string, transformations: PropertyNameTransf
  * Normalizes first level property names according to FullStory API custom var expectations. Type suffixes
  * will be added to first level property names when a known type suffix isn't present and the type can be
  * inferred. First level property names will also be camel cased if specified, preserving any known type
- * suffixes. Finally, any supported characters will be stripped from property names.
+ * suffixes. Finally, any unsupported characters will be stripped from property names.
  *
  * @param obj The source object.
  * @param options Extended normalization options, including whether to camel case property names.
