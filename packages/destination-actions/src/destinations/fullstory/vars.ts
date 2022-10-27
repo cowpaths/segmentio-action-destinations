@@ -63,24 +63,47 @@ const inferType = (value: any) => {
 const isKnownTypeSuffix = (suffix: string) => !!typeValidators[suffix]
 
 /**
+ * Applies a given transformation to a property name, preserving any known type suffixes.
+ *
+ * @param name The full original property name
+ * @param transform The transform which will be applied to the original property name
+ * @returns The transformed property name, preserving any known type suffixes.
+ */
+const transformPropertyName = (name: string, transform: (original: string) => string): string => {
+  const parts = name.split('_')
+  if (parts.length > 1) {
+    const typeSuffix = parts.pop()
+    if (typeSuffix && typeValidators[typeSuffix]) {
+      return transform(parts.join('_')) + `_${typeSuffix}`
+    }
+  }
+
+  return transform(name)
+}
+
+/**
  * Camel cases `.`, `-`, `_`, and white space within property names. Preserves type suffix casing.
  *
  * NOTE: Does not fix otherwise malformed fieldNames.
  *
  * @param {string} name
  */
-const camelCasePropertyName = (name: string) => {
-  // Do not camel case known type suffixes.
-  const parts = name.split('_')
-  if (parts.length > 1) {
-    const typeSuffix = parts.pop()
-    if (typeSuffix && typeValidators[typeSuffix]) {
-      return camelCase(parts.join('_')) + '_' + typeSuffix
-    }
-  }
+const camelCasePropertyName = (name: string) => transformPropertyName(name, camelCase)
 
-  // No type suffix found. Camel case the whole field name.
-  return camelCase(name)
+const invalidPropertyNameCharRegex = /[^A-Za-z0-9_]/g
+
+/**
+ * Strips characters not supported by FullStory user vars or custom event vars from property names.
+ * Preserves known type suffixes.
+ *
+ * @param name The original property name
+ * @returns The property name excluding any unsupported characters
+ */
+const stripUnsupportedCharsFromPropertyName = (name: string) => {
+  const transform = (original: string) => {
+    return original.replace(invalidPropertyNameCharRegex, '')
+  }
+  return transformPropertyName(name, transform)
 }
 
 const typeSuffixPropertyName = (name: string, value: unknown) => {
@@ -105,19 +128,6 @@ const typeSuffixPropertyName = (name: string, value: unknown) => {
   }
 
   return name
-}
-
-const invalidPropertyNameCharRegex = /[^A-Za-z0-9_]/g
-
-const stripUnsupportedCharsFromPropertyName = (name: string) => {
-  const parts = name.split('_')
-  if (parts.length > 1) {
-    const typeSuffix = parts.pop()
-    if (typeSuffix) {
-      return parts.join('_').replace(invalidPropertyNameCharRegex, '') + `_${typeSuffix}`
-    }
-  }
-  return name.replace(invalidPropertyNameCharRegex, '')
 }
 
 /**
