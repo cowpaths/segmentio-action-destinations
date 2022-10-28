@@ -66,15 +66,27 @@ const invalidPropertyNameCharRegex = /[^A-Za-z0-9_]/g
 
 /**
  * Strips characters not supported by FullStory user vars or custom event vars from property names.
- * Preserves known type suffixes.
+ * Does not preserve type suffixes. Intended to be used with {@link transformPropertyName} which
+ * does preserve type suffixes.
  *
- * @param name The original property name
- * @returns The property name excluding any unsupported characters
+ * @param text The text from which to remove unsupported characters
+ * @returns The original text excluding any unsupported characters
  */
-const stripUnsupportedCharsFromPropertyName = (name: string) => {
-  return name.replace(invalidPropertyNameCharRegex, '')
+const stripCharsNotSupportedInPropertyNames = (text: string) => {
+  return text.replace(invalidPropertyNameCharRegex, '')
 }
 
+/**
+ * If the given property name doesn't already include a known type suffix, attempts to infer a
+ * type suffix from the property's value. If a type can be inferred from the property's value,
+ * returns a new version of the property name with that type's suffix appended. Otherwise, returns
+ * the original property name.
+ *
+ * @param name The property name
+ * @param value The value for the given property
+ * @returns The original property name if it already included a known type suffix; otherwise
+ *          the property name with a type suffix inferred from its value
+ */
 const typeSuffixPropertyName = (name: string, value: unknown) => {
   const valueTypeName = typeof value
 
@@ -102,7 +114,8 @@ const typeSuffixPropertyName = (name: string, value: unknown) => {
 type PropertyNameTransformation = (_: string) => string
 
 /**
- * Applies given transformation to a property name, preserving any known type suffixes.
+ * Applies given transformations to a property name, preserving any known type suffixes in the
+ * original property name.
  *
  * @param name The full original property name
  * @param transformations The transformations which will be applied to the original property name
@@ -145,7 +158,7 @@ export const normalizePropertyNames = (obj?: {}, options?: { camelCase?: boolean
   if (options?.camelCase) {
     transformations.push(camelCase)
   }
-  transformations.push(stripUnsupportedCharsFromPropertyName)
+  transformations.push(stripCharsNotSupportedInPropertyNames)
 
   const normalizePropertyName = (name: string, value: unknown) => {
     const transformedName = transformPropertyName(name, transformations)
