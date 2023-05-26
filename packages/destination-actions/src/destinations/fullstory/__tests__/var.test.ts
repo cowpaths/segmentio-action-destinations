@@ -99,20 +99,32 @@ describe('normalizePropertyNames', () => {
     expect(actual).toEqual(expected)
   })
 
-  it('type suffixes and camel cases nested properties', () => {
+  it('type suffixes and camel cases nested properties up to max depth', () => {
     const originalPayload = {
-      parent: {
-        parent_string_prop: 'some string',
-        child: {
-          child_string_prop: 'some other string'
+      first: {
+        second: {
+          third: {
+            fourth: {
+              fourth_nested: 'some string',
+              fifth: {
+                fifth_nested: 'some other string'
+              }
+            }
+          }
         }
       }
     }
     const expectedPayload = {
-      parent_obj: {
-        parentStringProp_str: originalPayload.parent.parent_string_prop,
-        child_obj: {
-          childStringProp_str: originalPayload.parent.child.child_string_prop
+      first_obj: {
+        second_obj: {
+          third_obj: {
+            fourth_obj: {
+              fourthNested_str: 'some string',
+              fifth_obj: {
+                fifth_nested: 'some other string'
+              }
+            }
+          }
         }
       }
     }
