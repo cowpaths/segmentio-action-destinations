@@ -99,6 +99,27 @@ describe('normalizePropertyNames', () => {
     expect(actual).toEqual(expected)
   })
 
+  it('type suffixes and camel cases nested properties', () => {
+    const originalPayload = {
+      parent: {
+        parent_string_prop: 'some string',
+        child: {
+          child_string_prop: 'some other string'
+        }
+      }
+    }
+    const expectedPayload = {
+      parent_obj: {
+        parentStringProp_str: originalPayload.parent.parent_string_prop,
+        child_obj: {
+          childStringProp_str: originalPayload.parent.child.child_string_prop
+        }
+      }
+    }
+    const transformedPayload = normalizePropertyNames(originalPayload, { camelCase: true })
+    expect(transformedPayload).toEqual(expectedPayload)
+  })
+
   const unsupportedPropertyNameChars = [' ', '.', '-', ':']
 
   unsupportedPropertyNameChars.forEach((char) => {

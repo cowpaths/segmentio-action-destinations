@@ -168,7 +168,8 @@ export const normalizePropertyNames = (obj?: {}, options?: { camelCase?: boolean
   return Object.entries(obj).reduce(
     (acc, [key, value]) => ({
       ...acc,
-      [normalizePropertyName(key, value)]: value
+      [normalizePropertyName(key, value)]:
+        inferType(value) === 'obj' ? normalizePropertyNames(value as {}, options) : value
     }),
     {}
   )
