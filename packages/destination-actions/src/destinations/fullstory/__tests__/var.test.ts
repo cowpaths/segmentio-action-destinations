@@ -8,7 +8,7 @@ const suffixToExampleValuesMap: Record<string, any[]> = {
   real: [1, 1.23],
   int: [1],
   date: [new Date()],
-  obj: [{}, { secondLevelProp: 'some value' }]
+  obj: [{}, { second_level_string_prop: 'some value' }]
 }
 
 suffixToExampleValuesMap.strs = [suffixToExampleValuesMap.str]
@@ -43,7 +43,7 @@ describe('normalizePropertyNames', () => {
   })
 
   it('adds type suffixes when type can be inferred and known type suffix is absent', () => {
-    const obj = {
+    const originalPayload = {
       string_prop: suffixToExampleValuesMap.str[0],
       bool_prop1: suffixToExampleValuesMap.bool[0],
       bool_prop2: suffixToExampleValuesMap.bool[1],
@@ -60,27 +60,29 @@ describe('normalizePropertyNames', () => {
       dates_prop: suffixToExampleValuesMap.dates[0],
       objs_prop: suffixToExampleValuesMap.objs[0]
     }
-    const expected = {
-      string_prop_str: obj.string_prop,
-      bool_prop1_bool: obj.bool_prop1,
-      bool_prop2_bool: obj.bool_prop2,
-      real_prop1_real: obj.real_prop1,
-      real_prop2_real: obj.real_prop2,
+
+    const expectedPayload = {
+      string_prop_str: originalPayload.string_prop,
+      bool_prop1_bool: originalPayload.bool_prop1,
+      bool_prop2_bool: originalPayload.bool_prop2,
+      real_prop1_real: originalPayload.real_prop1,
+      real_prop2_real: originalPayload.real_prop2,
       // This may seem counter-intuitive, but this matches the FullStory client API behavior which prefers
       // reals over ints to avoid inconsistent type inference.
-      int_prop_real: obj.int_prop,
-      date_prop_date: obj.date_prop,
-      obj_prop1_obj: obj.obj_prop1,
-      obj_prop2_obj: obj.obj_prop2,
-      strs_prop_strs: obj.strs_prop,
-      bools_prop_bools: obj.bools_prop,
-      reals_prop_reals: obj.reals_prop,
-      ints_prop_reals: obj.ints_prop,
-      dates_prop_dates: obj.dates_prop,
-      objs_prop_objs: obj.objs_prop
+      int_prop_real: originalPayload.int_prop,
+      date_prop_date: originalPayload.date_prop,
+      obj_prop1_obj: originalPayload.obj_prop1,
+      obj_prop2_obj: originalPayload.obj_prop2,
+      strs_prop_strs: originalPayload.strs_prop,
+      bools_prop_bools: originalPayload.bools_prop,
+      reals_prop_reals: originalPayload.reals_prop,
+      ints_prop_reals: originalPayload.ints_prop,
+      dates_prop_dates: originalPayload.dates_prop,
+      objs_prop_objs: originalPayload.objs_prop
     }
-    const actual = normalizePropertyNames(obj)
-    expect(actual).toEqual(expected)
+
+    const transformedPayload = normalizePropertyNames(originalPayload)
+    expect(transformedPayload).toEqual(expectedPayload)
   })
 
   it('camel cases when specified', () => {
