@@ -102,7 +102,7 @@ const typeSuffixPropertyName = (name: string, value: unknown) => {
     const maybeType = inferType(value)
     if (maybeType === null || maybeType === 'obj') {
       // If we can't infer the type or if the type is a single object, don't change the property name.
-      // The FullStory client API doesn't add _obj type suffixes to inferred objects.
+      // The FullStory client API doesn't add _obj type suffixes to inferred object propery names.
       return name
     }
 
