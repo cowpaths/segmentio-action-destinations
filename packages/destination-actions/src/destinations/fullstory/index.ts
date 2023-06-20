@@ -3,6 +3,7 @@ import { defaultValues, PayloadValidationError } from '@segment/actions-core'
 import type { Settings } from './generated-types'
 import identifyUser from './identifyUser'
 import trackEvent from './trackEvent'
+import identifyUserV2 from './identifyUserV2'
 import { listOperationsRequestParams, deleteUserRequestParams } from './request-params'
 
 const destination: DestinationDefinition<Settings> = {
@@ -21,6 +22,12 @@ const destination: DestinationDefinition<Settings> = {
       subscribe: 'type = "identify"',
       partnerAction: 'identifyUser',
       mapping: defaultValues(identifyUser.fields)
+    },
+    {
+      name: 'Identify User V2',
+      subscribe: 'type = "identify"',
+      partnerAction: 'identifyUserV2',
+      mapping: defaultValues(identifyUserV2.fields)
     }
   ],
   authentication: {
@@ -50,7 +57,8 @@ const destination: DestinationDefinition<Settings> = {
 
   actions: {
     trackEvent,
-    identifyUser
+    identifyUser,
+    identifyUserV2
   }
 }
 

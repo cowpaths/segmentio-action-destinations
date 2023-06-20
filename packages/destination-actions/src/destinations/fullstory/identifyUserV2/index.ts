@@ -1,11 +1,11 @@
 import type { ActionDefinition } from '@segment/actions-core'
 import type { Settings } from '../generated-types'
-import { setUserPropertiesRequestParams } from '../request-params'
+import { createUpdateUser } from '../request-params'
 import { normalizePropertyNames } from '../vars'
 
 const action: ActionDefinition<Settings> = {
-  title: 'Identify User',
-  description: 'Sets user identity variables',
+  title: 'Identify User V2',
+  description: 'Sets user identity variables, creates user if it does not exist',
   platform: 'cloud',
   defaultSubscription: 'type = "identify"',
   fields: {
@@ -58,19 +58,20 @@ const action: ActionDefinition<Settings> = {
   perform: (request, { payload, settings }) => {
     const { traits, anonymousId, userId, email, displayName } = payload
 
-    const normalizedTraits = normalizePropertyNames(traits, { camelCase: true, typeSuffix: true })
+    const normalizedTraits = normalizePropertyNames(traits, { camelCase: true })
 
     if (anonymousId) {
-      normalizedTraits.segmentAnonymousId_str = anonymousId
+      normalizedTraits.segmentAnonymousId = anonymousId
     }
 
     const requestBody = {
-      ...normalizedTraits,
+      uid: userId,
       ...(email !== undefined && { email }),
-      ...(displayName !== undefined && { displayName })
+      ...(displayName !== undefined && { displayName }),
+      ...normalizedTraits
     }
 
-    const { url, options } = setUserPropertiesRequestParams(settings, userId, requestBody)
+    const { url, options } = createUpdateUser(settings, requestBody)
     return request(url, options)
   }
 }

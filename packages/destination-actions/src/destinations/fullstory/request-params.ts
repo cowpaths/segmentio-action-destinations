@@ -139,3 +139,24 @@ export const deleteUserRequestParams = (settings: Settings, userId: string): Req
     }
   }
 }
+
+/**
+ * Returns {@link RequestParams} for the set user properties HTTP API endpoint.
+ *
+ * @param settings Settings configured for the cloud mode destination.
+ * @param userId The id of the user to update.
+ * @param requestBody The request body containing user properties to set.
+ */
+
+export const createUpdateUser = (settings: Settings, requestBody: Object): RequestParams => {
+  const defaultParams = defaultRequestParams(settings, 'v2beta/users/')
+
+  return {
+    ...defaultParams,
+    options: {
+      ...defaultParams.options,
+      method: 'post',
+      json: requestBody
+    }
+  }
+}
