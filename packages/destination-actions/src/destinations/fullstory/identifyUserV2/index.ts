@@ -9,7 +9,7 @@ const action: ActionDefinition<Settings> = {
   platform: 'cloud',
   defaultSubscription: 'type = "identify"',
   fields: {
-    userId: {
+    uid: {
       type: 'string',
       required: true,
       description: "The user's id",
@@ -18,16 +18,7 @@ const action: ActionDefinition<Settings> = {
         '@path': '$.userId'
       }
     },
-    anonymousId: {
-      type: 'string',
-      required: false,
-      description: "The user's anonymous id",
-      label: 'Anonymous ID',
-      default: {
-        '@path': '$.anonymousId'
-      }
-    },
-    displayName: {
+    display_name: {
       type: 'string',
       required: false,
       description: "The user's display name",
@@ -45,7 +36,7 @@ const action: ActionDefinition<Settings> = {
         '@path': '$.traits.email'
       }
     },
-    traits: {
+    properties: {
       type: 'object',
       required: false,
       description: 'The Segment traits to be forwarded to FullStory',
@@ -56,19 +47,20 @@ const action: ActionDefinition<Settings> = {
     }
   },
   perform: (request, { payload, settings }) => {
-    const { traits, anonymousId, userId, email, displayName } = payload
+    const { properties, uid, email, display_name } = payload
 
-    const normalizedTraits = normalizePropertyNames(traits, { camelCase: true })
+    const normalizedProperties = normalizePropertyNames(properties, { camelCase: true })
 
-    if (anonymousId) {
-      normalizedTraits.segmentAnonymousId = anonymousId
-    }
+    delete normalizedProperties.email
+    delete normalizedProperties.name
 
     const requestBody = {
-      uid: userId,
+      uid,
       ...(email !== undefined && { email }),
-      ...(displayName !== undefined && { displayName }),
-      ...normalizedTraits
+      ...(display_name !== undefined && { display_name }),
+      properties: {
+        ...normalizedProperties
+      }
     }
 
     const { url, options } = createUpdateUser(settings, requestBody)

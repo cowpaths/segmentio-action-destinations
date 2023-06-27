@@ -4,15 +4,11 @@ export interface Payload {
   /**
    * The user's id
    */
-  userId: string
-  /**
-   * The user's anonymous id
-   */
-  anonymousId?: string
+  uid: string
   /**
    * The user's display name
    */
-  displayName?: string
+  display_name?: string
   /**
    * The user's email
    */
@@ -20,7 +16,7 @@ export interface Payload {
   /**
    * The Segment traits to be forwarded to FullStory
    */
-  traits?: {
+  properties?: {
     [k: string]: unknown
   }
 }
