@@ -167,4 +167,39 @@ describe('FullStory', () => {
       })
     })
   })
+
+  describe('identifyUserV2', () => {
+    it('makes expected request with default mappings', async () => {
+      nock(baseUrl).post('/v2beta/users').reply(200)
+      const event = createTestEvent({
+        type: 'identify',
+        userId,
+        traits: {
+          email,
+          name: displayName,
+          'originally-hyphenated': 'some string',
+          'originally spaced': true,
+          'originally.dotted': 1.23
+        }
+      })
+
+      const [response] = await testDestination.testAction('identifyUserV2', {
+        settings,
+        event,
+        useDefaultMappings: true
+      })
+
+      expect(response.status).toBe(200)
+      expect(JSON.parse(response.options.body as string)).toEqual({
+        uid: userId,
+        email,
+        display_name: displayName,
+        properties: {
+          originallyHyphenated: 'some string',
+          originallySpaced: true,
+          originallyDotted: 1.23
+        }
+      })
+    })
+  })
 })
