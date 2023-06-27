@@ -149,7 +149,7 @@ export const deleteUserRequestParams = (settings: Settings, userId: string): Req
  */
 
 export const createUpdateUser = (settings: Settings, requestBody: Object): RequestParams => {
-  const defaultParams = defaultRequestParams(settings, 'v2beta/users/')
+  const defaultParams = defaultRequestParams(settings, 'v2beta/users')
 
   return {
     ...defaultParams,
