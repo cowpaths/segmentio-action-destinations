@@ -39,6 +39,16 @@ describe('normalizePropertyNames', () => {
     expect(normalizedObj).toEqual(obj)
   })
 
+  it('does not add type suffix if parameter is undefined/false', () => {
+    const originalPayload = {
+      str_prop: suffixToExampleValuesMap.str
+    }
+    const normalizedObj = normalizePropertyNames(originalPayload)
+    expect(normalizedObj).toEqual(originalPayload)
+    const normalizedObj2 = normalizePropertyNames(originalPayload, { typeSuffix: false })
+    expect(normalizedObj2).toEqual(originalPayload)
+  })
+
   it('adds type suffixes when type can be inferred and known type suffix is absent', () => {
     const originalPayload = {
       str_prop: suffixToExampleValuesMap.str,
