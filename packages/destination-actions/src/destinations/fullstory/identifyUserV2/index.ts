@@ -1,6 +1,6 @@
 import type { ActionDefinition } from '@segment/actions-core'
 import type { Settings } from '../generated-types'
-import { createUpdateUser } from '../request-params'
+import { createUserRequestParams } from '../request-params'
 import { normalizePropertyNames } from '../vars'
 
 const action: ActionDefinition<Settings> = {
@@ -63,7 +63,7 @@ const action: ActionDefinition<Settings> = {
       }
     }
 
-    const { url, options } = createUpdateUser(settings, requestBody)
+    const { url, options } = createUserRequestParams(settings, requestBody)
     return request(url, options)
   }
 }

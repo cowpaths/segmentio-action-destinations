@@ -147,7 +147,7 @@ export const deleteUserRequestParams = (settings: Settings, userId: string): Req
  * @param requestBody The request body containing user properties to set.
  */
 
-export const createUpdateUser = (settings: Settings, requestBody: Object): RequestParams => {
+export const createUserRequestParams = (settings: Settings, requestBody: Object): RequestParams => {
   const defaultParams = defaultRequestParams(settings, 'v2beta/users')
 
   return {
