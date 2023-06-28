@@ -5,7 +5,7 @@ import { normalizePropertyNames } from '../vars'
 
 const action: ActionDefinition<Settings> = {
   title: 'Identify User V2',
-  description: 'Sets user identity variables, creates user if it does not exist',
+  description: 'Sets user identity variables. Creates a new FullStory user if no user matching the given uid is found.',
   platform: 'cloud',
   defaultSubscription: 'type = "identify"',
   fields: {
