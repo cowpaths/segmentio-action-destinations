@@ -18,7 +18,16 @@ const action: ActionDefinition<Settings> = {
         '@path': '$.userId'
       }
     },
-    display_name: {
+    anonymousId: {
+      type: 'string',
+      required: false,
+      description: "The user's anonymous id",
+      label: 'Anonymous ID',
+      default: {
+        '@path': '$.anonymousId'
+      }
+    },
+    displayName: {
       type: 'string',
       required: false,
       description: "The user's display name",
@@ -47,17 +56,18 @@ const action: ActionDefinition<Settings> = {
     }
   },
   perform: (request, { payload, settings }) => {
-    const { properties, uid, email, display_name } = payload
+    const { properties, anonymousId, uid, email, displayName } = payload
 
     const normalizedProperties = normalizePropertyNames(properties, { camelCase: true })
 
-    delete normalizedProperties.email
-    delete normalizedProperties.name
+    if (anonymousId) {
+      normalizedProperties.segmentAnonymousId = anonymousId
+    }
 
     const requestBody = {
       uid,
       ...(email !== undefined && { email }),
-      ...(display_name !== undefined && { display_name }),
+      ...(displayName !== undefined && { display_name: displayName }),
       properties: {
         ...normalizedProperties
       }

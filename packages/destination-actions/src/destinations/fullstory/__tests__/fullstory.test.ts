@@ -174,6 +174,7 @@ describe('FullStory', () => {
       const event = createTestEvent({
         type: 'identify',
         userId,
+        anonymousId,
         traits: {
           email,
           name: displayName,
@@ -196,6 +197,9 @@ describe('FullStory', () => {
         email,
         display_name: displayName,
         properties: {
+          email,
+          name: displayName,
+          segmentAnonymousId: anonymousId,
           originallyHyphenated: 'some string',
           originallySpaced: true,
           originallyDotted: 1.23,
