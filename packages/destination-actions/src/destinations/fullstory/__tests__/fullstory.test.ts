@@ -179,7 +179,8 @@ describe('FullStory', () => {
           name: displayName,
           'originally-hyphenated': 'some string',
           'originally spaced': true,
-          'originally.dotted': 1.23
+          'originally.dotted': 1.23,
+          typeSuffixed_bool: true
         }
       })
 
@@ -197,7 +198,8 @@ describe('FullStory', () => {
         properties: {
           originallyHyphenated: 'some string',
           originallySpaced: true,
-          originallyDotted: 1.23
+          originallyDotted: 1.23,
+          typeSuffixed_bool: true
         }
       })
     })
