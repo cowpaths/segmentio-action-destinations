@@ -200,9 +200,9 @@ describe('FullStory', () => {
           email,
           name: displayName,
           segmentAnonymousId: anonymousId,
-          originallyHyphenated: 'some string',
-          originallySpaced: true,
-          originallyDotted: 1.23,
+          originallyhyphenated: 'some string',
+          originallyspaced: true,
+          originallydotted: 1.23,
           typeSuffixed_bool: true
         }
       })
