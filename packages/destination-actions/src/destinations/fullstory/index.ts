@@ -22,12 +22,6 @@ const destination: DestinationDefinition<Settings> = {
       subscribe: 'type = "identify"',
       partnerAction: 'identifyUser',
       mapping: defaultValues(identifyUser.fields)
-    },
-    {
-      name: 'Identify User V2',
-      subscribe: 'type = "identify"',
-      partnerAction: 'identifyUserV2',
-      mapping: defaultValues(identifyUserV2.fields)
     }
   ],
   authentication: {
