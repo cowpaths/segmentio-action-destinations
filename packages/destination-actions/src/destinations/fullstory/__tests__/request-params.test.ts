@@ -2,7 +2,8 @@ import {
   listOperationsRequestParams,
   customEventRequestParams,
   setUserPropertiesRequestParams,
-  deleteUserRequestParams
+  deleteUserRequestParams,
+  createUserRequestParams
 } from '../request-params'
 import {
   anonymousId,
@@ -121,6 +122,25 @@ describe('requestParams', () => {
       expect(options.headers!['Content-Type']).toBe('application/json')
       expect(options.headers!['Authorization']).toBe(`Basic ${settings.apiKey}`)
       expect(url).toBe(`${baseUrl}/users/v1/individual/${urlEncodedUserId}`)
+    })
+  })
+
+  describe('createUserV2', () => {
+    it('returns expected request params', () => {
+      const requestBody = {
+        userId,
+        anonymousId,
+        traits: {
+          displayName,
+          email
+        }
+      }
+      const { url, options } = createUserRequestParams(settings, requestBody)
+      expect(options.method).toBe('post')
+      expect(options.headers!['Content-Type']).toBe('application/json')
+      expect(options.headers!['Authorization']).toBe(`Basic ${settings.apiKey}`)
+      expect(url).toBe(`${baseUrl}/v2beta/users?${integrationSourceQueryParam}`)
+      expect(options.json).toEqual(requestBody)
     })
   })
 })
