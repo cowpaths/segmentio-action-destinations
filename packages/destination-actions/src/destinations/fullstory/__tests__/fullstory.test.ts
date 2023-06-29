@@ -170,7 +170,7 @@ describe('FullStory', () => {
 
   describe('identifyUserV2', () => {
     it('makes expected request with default mappings', async () => {
-      nock(baseUrl).post('/v2beta/users').reply(200)
+      nock(baseUrl).post(`/v2beta/users?${integrationSourceQueryParam}`).reply(200)
       const event = createTestEvent({
         type: 'identify',
         userId,
