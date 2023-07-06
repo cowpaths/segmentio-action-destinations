@@ -10,7 +10,8 @@ export const email = 'fake+email@example.com'
 export const displayName = 'fake-display-name'
 export const baseUrl = 'https://api.fullstory.com'
 export const settings = { apiKey }
-export const integrationSourceQueryParam = `integration=segment`
+export const integrationSource = 'segment'
+export const integrationSourceQueryParam = `integration=${integrationSource}`
 
 const testDestination = createTestIntegration(Definition)
 

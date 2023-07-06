@@ -26,7 +26,8 @@ const defaultRequestParams = (settings: Settings, relativeUrl: string): RequestP
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Basic ${settings.apiKey}`
+        Authorization: `Basic ${settings.apiKey}`,
+        'Integration-Source': segmentIntegrationSource
       }
     }
   }
