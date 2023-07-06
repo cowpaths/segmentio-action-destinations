@@ -258,7 +258,7 @@ describe('FullStory', () => {
           second_property: 'second_value',
           thirdProperty: 'thirdValue',
           useRecentSession: true,
-          sessionUrl: `session/url/${sessionId}`
+          sessionUrl: `session/url/${encodeURIComponent(sessionId)}`
         },
         user: {
           uid: userId
