@@ -238,7 +238,7 @@ describe('FullStory', () => {
       const [response] = await testDestination.testAction('trackEventV2', {
         settings,
         event,
-        // Default mappings defined under fields in ../trackEvent/index.ts
+        // Default mappings defined under fields in ../trackEventV2/index.ts
         useDefaultMappings: true,
         mapping: {
           useRecentSession: {
