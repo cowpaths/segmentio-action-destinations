@@ -6,8 +6,8 @@ import { createEventRequestParams } from '../request-params'
 import { normalizePropertyNames } from '../vars'
 
 const action: ActionDefinition<Settings, Payload> = {
-  title: 'Track Event',
-  description: 'Track events V2',
+  title: 'Track Event V2',
+  description: 'Track events V2.',
   platform: 'cloud',
   defaultSubscription: 'type = "track"',
   fields: {
