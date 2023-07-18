@@ -8,7 +8,7 @@ import trackEventV2 from './trackEventV2'
 import { listOperationsRequestParams, deleteUserRequestParams } from './request-params'
 
 const destination: DestinationDefinition<Settings> = {
-  name: 'Fullstory Cloud Mode (Actions)',
+  name: 'FullStory Cloud Mode (Actions)',
   slug: 'actions-fullstory-cloud',
   mode: 'cloud',
   presets: [
@@ -30,7 +30,9 @@ const destination: DestinationDefinition<Settings> = {
     fields: {
       apiKey: {
         label: 'API Key',
-        description: '[FullStory API key](https://help.fullstory.com/hc/en-us/articles/360052021773-Managing-API-Keys)',
+        description:
+          '[FullStory API key](https://help.fullstory.com/hc/en-us/articles/360052021773-Managing-API-Keys). An `Admin` or `Architect` API Key ' +
+          'is necessary for GDPR deletions to propagate, otherwise a `Standard` API Key will work.',
         type: 'password',
         required: true
       }
