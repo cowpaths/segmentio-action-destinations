@@ -130,7 +130,7 @@ export const setUserPropertiesRequestParams = (
  * @param userId The id of the user to delete.
  */
 export const deleteUserRequestParams = (settings: Settings, userId: string): RequestParams => {
-  const defaultParams = defaultRequestParams(settings, `v2beta/users?uid=${encodeURIComponent(userId)}`)
+  const defaultParams = defaultRequestParams(settings, `v2/users?uid=${encodeURIComponent(userId)}`)
 
   return {
     ...defaultParams,
@@ -148,7 +148,7 @@ export const deleteUserRequestParams = (settings: Settings, userId: string): Req
  * @param requestBody The request body containing user properties to set.
  */
 export const createUserRequestParams = (settings: Settings, requestBody: Object): RequestParams => {
-  const defaultParams = defaultRequestParams(settings, `v2beta/users?${integrationSourceQueryParam}`)
+  const defaultParams = defaultRequestParams(settings, `v2/users?${integrationSourceQueryParam}`)
 
   return {
     ...defaultParams,
@@ -178,7 +178,7 @@ export const createEventRequestParams = (
   }
 ): RequestParams => {
   const { userId, eventName, properties: eventData, timestamp, useRecentSession, sessionUrl } = requestValues
-  const defaultParams = defaultRequestParams(settings, `v2beta/events?${integrationSourceQueryParam}`)
+  const defaultParams = defaultRequestParams(settings, `v2/events?${integrationSourceQueryParam}`)
 
   const requestBody: Record<string, any> = {
     name: eventName,
