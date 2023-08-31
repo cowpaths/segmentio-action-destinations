@@ -169,7 +169,7 @@ export const createUserRequestParams = (settings: Settings, requestBody: Object)
 export const createEventRequestParams = (
   settings: Settings,
   requestValues: {
-    userId: string
+    userId?: string
     eventName: string
     properties: {}
     timestamp?: string
