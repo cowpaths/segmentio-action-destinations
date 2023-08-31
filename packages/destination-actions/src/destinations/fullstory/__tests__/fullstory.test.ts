@@ -171,7 +171,7 @@ describe('FullStory', () => {
 
   describe('identifyUserV2', () => {
     it('makes expected request with default mappings', async () => {
-      nock(baseUrl).post(`/v2/users?${integrationSourceQueryParam}`).reply(200)
+      nock(baseUrl).post(`/v2/users`).reply(200)
       const event = createTestEvent({
         type: 'identify',
         userId,
@@ -212,7 +212,7 @@ describe('FullStory', () => {
 
   describe('trackEventV2', () => {
     it('makes expected request with default mappings', async () => {
-      nock(baseUrl).post(`/v2/events?${integrationSourceQueryParam}`).reply(200)
+      nock(baseUrl).post(`/v2/events`).reply(200)
       const eventName = 'test-event'
 
       const sessionId = '12345:678'
@@ -272,7 +272,7 @@ describe('FullStory', () => {
     })
 
     it('handles undefined event values', async () => {
-      nock(baseUrl).post(`/v2/events?${integrationSourceQueryParam}`).reply(200)
+      nock(baseUrl).post(`/v2/events`).reply(200)
       const eventName = 'test-event'
 
       const event = createTestEvent({

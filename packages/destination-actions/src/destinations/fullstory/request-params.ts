@@ -148,7 +148,7 @@ export const deleteUserRequestParams = (settings: Settings, userId: string): Req
  * @param requestBody The request body containing user properties to set.
  */
 export const createUserRequestParams = (settings: Settings, requestBody: Object): RequestParams => {
-  const defaultParams = defaultRequestParams(settings, `v2/users?${integrationSourceQueryParam}`)
+  const defaultParams = defaultRequestParams(settings, `v2/users`)
 
   return {
     ...defaultParams,
@@ -178,7 +178,7 @@ export const createEventRequestParams = (
   }
 ): RequestParams => {
   const { userId, eventName, properties: eventData, timestamp, useRecentSession, sessionUrl } = requestValues
-  const defaultParams = defaultRequestParams(settings, `v2/events?${integrationSourceQueryParam}`)
+  const defaultParams = defaultRequestParams(settings, `v2/events`)
 
   const requestBody: Record<string, any> = {
     name: eventName,
