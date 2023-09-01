@@ -18,7 +18,7 @@ const testDestination = createTestIntegration(Definition)
 describe('FullStory', () => {
   describe('testAuthentication', () => {
     it('makes expected request', async () => {
-      nock(baseUrl).get('/operations/v1?limit=1').reply(200)
+      nock(baseUrl).get('/me').reply(200)
       await expect(testDestination.testAuthentication(settings)).resolves.not.toThrowError()
     })
   })

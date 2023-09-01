@@ -1,10 +1,10 @@
 import {
-  listOperationsRequestParams,
   customEventRequestParams,
   setUserPropertiesRequestParams,
   deleteUserRequestParams,
   createUserRequestParams,
-  createEventRequestParams
+  createEventRequestParams,
+  meRequestParams
 } from '../request-params'
 import {
   anonymousId,
@@ -19,14 +19,14 @@ import {
 } from './fullstory.test'
 
 describe('requestParams', () => {
-  describe('listOperations', () => {
-    it(`returns expected request params`, () => {
-      const { url, options } = listOperationsRequestParams(settings)
+  describe('me', () => {
+    it('returns expected request params', () => {
+      const { url, options } = meRequestParams(settings)
       expect(options.method).toBe('get')
       expect(options.headers!['Content-Type']).toBe('application/json')
       expect(options.headers!['Authorization']).toBe(`Basic ${settings.apiKey}`)
       expect(options.headers!['Integration-Source']).toBe(integrationSource)
-      expect(url).toBe(`${baseUrl}/operations/v1?limit=1`)
+      expect(url).toBe(`${baseUrl}/me`)
     })
   })
 

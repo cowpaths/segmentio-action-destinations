@@ -34,12 +34,11 @@ const defaultRequestParams = (settings: Settings, relativeUrl: string): RequestP
 }
 
 /**
- * Returns {@link RequestParams} for the list operations HTTP API endpoint.
+ * Returns {@link RequestParams} for the me HTTP API endpoint.
  *
  * @param settings Settings configured for the cloud mode destination.
  */
-export const listOperationsRequestParams = (settings: Settings): RequestParams =>
-  defaultRequestParams(settings, `operations/v1?limit=1`)
+export const meRequestParams = (settings: Settings): RequestParams => defaultRequestParams(settings, 'me')
 
 /**
  * Returns {@link RequestParams} for the V1 custom events HTTP API endpoint.
