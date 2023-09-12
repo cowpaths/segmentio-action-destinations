@@ -10,7 +10,7 @@ const destination: DestinationDefinition<Settings> = {
   name: 'Iqm',
   slug: 'actions-iqm',
   mode: 'cloud',
-
+  description: 'Send Segment events to IQM',
   authentication: {
     scheme: 'custom',
     fields: {
@@ -35,13 +35,13 @@ const destination: DestinationDefinition<Settings> = {
   actions: {
     postEvent
   },
-
   presets: [
     {
       name: 'Send an event to IQM',
       subscribe: 'type = "track"',
-      partnerAction: 'sendEvent',
-      mapping: defaultValues(postEvent.fields)
+      partnerAction: 'postEvent',
+      mapping: defaultValues(postEvent.fields),
+      type: 'automatic'
     }
   ]
 }

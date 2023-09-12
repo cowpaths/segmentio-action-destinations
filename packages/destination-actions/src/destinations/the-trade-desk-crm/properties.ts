@@ -1,4 +1,4 @@
-import { InputField } from '@segment/actions-core/src/destination-kit/types'
+import { InputField } from '@segment/actions-core/destination-kit/types'
 
 export const name: InputField = {
   label: 'Segment Name',
@@ -30,24 +30,36 @@ export const pii_type: InputField = {
 export const email: InputField = {
   label: 'User Email',
   description: "The user's email address to send to The Trade Desk.",
-  type: 'hidden', // This field is hidden from customers because the desired value always appears at path '$.context.traits.email' in Personas events.
+  type: 'string',
   default: {
     '@path': '$.context.traits.email'
-  }
+  },
+  unsafe_hidden: true
 }
 
 export const event_name: InputField = {
   label: 'Event Name',
   description: 'The name of the current Segment event.',
-  type: 'hidden', // This field is hidden from customers because the desired value always appears at path '$.event' in Personas events.
+  type: 'string',
   default: {
     '@path': '$.event'
-  }
+  },
+  unsafe_hidden: true
 }
 
 export const enable_batching: InputField = {
   label: 'Enable Batching',
   description: 'Enable batching of requests to The Trade Desk CRM Segment.',
   type: 'boolean',
-  default: true
+  default: true,
+  unsafe_hidden: true
+}
+
+export const batch_size: InputField = {
+  label: 'Batch Size',
+  description: 'Maximum number of events to include in each batch. Actual batch sizes may be lower.',
+  type: 'number',
+  required: false,
+  default: 100000,
+  unsafe_hidden: true
 }
