@@ -100,10 +100,10 @@ test('can load fullstory', async () => {
 })
 
 describe('custom domain settings', () => {
-  let initFullStorySpy: jest.SpyInstance
+  let initFullstorySpy: jest.SpyInstance
 
   beforeEach(() => {
-    initFullStorySpy = jest.spyOn(FullStoryTypes, 'initFullStory')
+    initFullstorySpy = jest.spyOn(FullStoryTypes, 'initFullstory')
   })
 
   test('initializes with custom host setting', async () => {
@@ -115,7 +115,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    expect(initFullStorySpy).toHaveBeenCalledWith(
+    expect(initFullstorySpy).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'test-org-id',
         host: 'custom-recording.example.com'
@@ -132,7 +132,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    expect(initFullStorySpy).toHaveBeenCalledWith(
+    expect(initFullstorySpy).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'test-org-id',
         appHost: 'app.example.com'
@@ -149,7 +149,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    expect(initFullStorySpy).toHaveBeenCalledWith(
+    expect(initFullstorySpy).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'test-org-id',
         script: 'custom-cdn.example.com/fs.js'
@@ -182,7 +182,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    expect(initFullStorySpy).toHaveBeenCalledWith(
+    expect(initFullstorySpy).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'test-org-id',
         host: 'custom-recording.example.com',
@@ -214,7 +214,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    const callArgs = initFullStorySpy.mock.calls[0][0]
+    const callArgs = initFullstorySpy.mock.calls[0][0]
     expect(callArgs).toEqual(
       expect.objectContaining({
         orgId: 'test-org-id'
@@ -296,7 +296,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    expect(initFullStorySpy).toHaveBeenCalledWith(
+    expect(initFullstorySpy).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'test-org-id',
         debug: true,

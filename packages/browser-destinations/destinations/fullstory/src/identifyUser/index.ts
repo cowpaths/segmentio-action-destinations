@@ -51,7 +51,7 @@ const action: BrowserActionDefinition<Settings, FS, Payload> = {
     traits: {
       type: 'object',
       required: false,
-      description: 'The Segment traits to be forwarded to FullStory',
+      description: 'The Segment traits to be forwarded to Fullstory',
       label: 'Traits',
       default: {
         '@path': '$.traits'
@@ -93,7 +93,7 @@ const action: BrowserActionDefinition<Settings, FS, Payload> = {
  * Camel cases `.`, `-`, `_`, and white space within fieldNames. Leaves type suffix alone.
  *
  * NOTE: Does not fix otherwise malformed fieldNames.
- * FullStory will scrub characters from keys that do not conform to /^[a-zA-Z][a-zA-Z0-9_]*$/.
+ * Fullstory will scrub characters from keys that do not conform to /^[a-zA-Z][a-zA-Z0-9_]*$/.
  *
  * @param {string} fieldName
  */

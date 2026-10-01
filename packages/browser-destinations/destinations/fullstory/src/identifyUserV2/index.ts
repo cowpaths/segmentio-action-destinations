@@ -50,7 +50,7 @@ const action: BrowserActionDefinition<Settings, FS, Payload> = {
     traits: {
       type: 'object',
       required: false,
-      description: 'The Segment traits to be forwarded to FullStory',
+      description: 'The Segment traits to be forwarded to Fullstory',
       label: 'Traits',
       default: {
         '@path': '$.traits'

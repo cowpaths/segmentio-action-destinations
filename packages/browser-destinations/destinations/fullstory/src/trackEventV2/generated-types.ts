@@ -6,7 +6,7 @@ export interface Payload {
    */
   name: string
   /**
-   * A JSON object containing additional information about the event that will be indexed by FullStory.
+   * A JSON object containing additional information about the event that will be indexed by Fullstory.
    */
   properties?: {
     [k: string]: unknown

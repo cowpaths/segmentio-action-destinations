@@ -20,7 +20,7 @@ const action: BrowserActionDefinition<Settings, FS, Payload> = {
       }
     },
     properties: {
-      description: 'A JSON object containing additional information about the event that will be indexed by FullStory.',
+      description: 'A JSON object containing additional information about the event that will be indexed by Fullstory.',
       label: 'Properties',
       required: false,
       type: 'object',
