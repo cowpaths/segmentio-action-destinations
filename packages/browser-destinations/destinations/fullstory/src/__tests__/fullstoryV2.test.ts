@@ -42,13 +42,6 @@ const example: Subscription[] = [
 
 beforeEach(() => {
   jest.restoreAllMocks()
-  delete window._fs_initialized
-  delete window._fs_script
-  delete window._fs_org
-  delete window._fs_namespace
-  if (typeof window._fs_namespace === 'number') {
-    delete window[window._fs_namespace]
-  }
   // @ts-ignore
   delete window.FS
 })

@@ -1,8 +1,6 @@
 import { Analytics, Context } from '@segment/analytics-next'
-import fullstory, { destination } from '..'
 import { Subscription } from '@segment/browser-destination-runtime/types'
 import { JSONArray } from '@segment/actions-core'
-import * as FullStoryTypes from '../types'
 
 const example: Subscription[] = [
   {
@@ -44,16 +42,19 @@ const example: Subscription[] = [
   }
 ]
 
-beforeEach(() => {
+let fullstory: typeof import('..').default
+let destination: typeof import('..').destination
+let FullStoryTypes: typeof import('../types')
+
+beforeEach(async () => {
   jest.restoreAllMocks()
-  // Reset FullStory initialization state
-  delete window._fs_initialized
-  delete window._fs_script
-  delete window._fs_org
-  delete window._fs_namespace
-  if (typeof window._fs_namespace === 'number') {
-    delete window[window._fs_namespace]
-  }
+  // @fullstory/browser 2.1+ keeps its init state in module scope rather than on window._fs_* globals,
+  // so reload the destination (and the SDK with it) to get a fresh, uninitialized SDK for each test.
+  jest.resetModules()
+  const destinationModule = await import('..')
+  fullstory = destinationModule.default
+  destination = destinationModule.destination
+  FullStoryTypes = await import('../types')
   // @ts-ignore
   delete window.FS
 })
@@ -88,7 +89,8 @@ test('can load fullstory', async () => {
     NodeList [
       <script
         crossorigin="anonymous"
-        src="https://edge.fullstory.com/s/fs.js"
+        data-fs-namespace="FS"
+        src="https://edge.fullstory.com/s/fs.js?org=thefullstory.com"
       />,
       <script>
         // the emptiness
@@ -159,7 +161,8 @@ describe('custom domain settings', () => {
       NodeList [
         <script
           crossorigin="anonymous"
-          src="https://custom-cdn.example.com/fs.js"
+          data-fs-namespace="FS"
+          src="https://custom-cdn.example.com/fs.js?org=test-org-id"
         />,
         <script>
           // the emptiness
@@ -193,7 +196,8 @@ describe('custom domain settings', () => {
       NodeList [
         <script
           crossorigin="anonymous"
-          src="https://custom-cdn.example.com/fs.js"
+          data-fs-namespace="FS"
+          src="https://custom-cdn.example.com/fs.js?org=test-org-id"
         />,
         <script>
           // the emptiness
@@ -225,13 +229,59 @@ describe('custom domain settings', () => {
       NodeList [
         <script
           crossorigin="anonymous"
-          src="https://edge.fullstory.com/s/fs.js"
+          data-fs-namespace="FS"
+          src="https://edge.fullstory.com/s/fs.js?org=test-org-id"
         />,
         <script>
           // the emptiness
         </script>,
       ]
     `)
+  })
+
+  describe('region handling', () => {
+    // Snippet 2.1 appends `?org=<orgId>` to the script URL; only the origin and path matter for region handling.
+    const scriptSrcs = () =>
+      Array.from(window.document.querySelectorAll('script[src]')).map((script) => {
+        const { origin, pathname } = new URL(script.getAttribute('src') as string)
+        return origin + pathname
+      })
+
+    test('loads fs.js from the regional edge when the orgId carries a region', async () => {
+      const [event] = await fullstory({
+        orgId: 'o-ABC123-eu1',
+        subscriptions: example as unknown as JSONArray
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      expect(scriptSrcs()).toContain('https://edge.eu1.fullstory.com/s/fs.js')
+    })
+
+    test('leaves a custom proxy script URL untouched for a regional orgId', async () => {
+      const [event] = await fullstory({
+        orgId: 'o-ABC123-eu1',
+        subscriptions: example as unknown as JSONArray,
+        host: 'proxy.example.com',
+        script: 'custom-cdn.example.com/fs.js'
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      expect(scriptSrcs()).toContain('https://custom-cdn.example.com/fs.js')
+      expect(scriptSrcs()).not.toContain('https://edge.eu1.fullstory.com/s/fs.js')
+    })
+
+    test('loads fs.js from the default edge for an na1 orgId', async () => {
+      const [event] = await fullstory({
+        orgId: 'o-ABC123-na1',
+        subscriptions: example as unknown as JSONArray
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      expect(scriptSrcs()).toContain('https://edge.fullstory.com/s/fs.js')
+    })
   })
 
   test('initializes with debug and recordOnlyThisIFrame along with custom settings', async () => {
