@@ -1,6 +1,6 @@
 import type { FS } from './types'
 import type { BrowserDestinationDefinition } from '@segment/browser-destination-runtime/types'
-import { initFullStory } from './types'
+import { initFullstory } from './types'
 import { browserDestination } from '@segment/browser-destination-runtime/shim'
 import type { Settings } from './generated-types'
 import trackEvent from './trackEvent'
@@ -48,40 +48,43 @@ export const destination: BrowserDestinationDefinition<Settings, FS> = {
   ],
   settings: {
     orgId: {
-      description: 'The organization ID for FullStory.',
+      description: 'The organization ID for Fullstory.',
       label: 'FS Org',
       type: 'string',
       required: true
     },
     debug: {
-      description: 'Enables FullStory debug mode.',
+      description: 'Enables Fullstory debug mode.',
       label: 'Debug mode',
       type: 'boolean',
       required: false,
       default: false
     },
     recordOnlyThisIFrame: {
-      description: 'Enables FullStory inside an iframe.',
+      description: 'Enables Fullstory inside an iframe.',
       label: 'Capture only this iFrame',
       type: 'boolean',
       required: false,
       default: false
-    }, 
+    },
     host: {
       label: 'Host',
-      description: "The domain of the web capture server host. Can be set to direct captured events to a [Fullstory Custom Endpoint](https://help.fullstory.com/hc/en-us/articles/18612999473175-How-to-send-captured-traffic-to-your-First-Party-Domain-using-Custom-Endpoints) or a proxy that you host. Defaults to 'fullstory.com'.",
+      description:
+        "The domain of the web capture server host. Can be set to direct captured events to a [Fullstory Custom Endpoint](https://help.fullstory.com/hc/en-us/articles/18612999473175-How-to-send-captured-traffic-to-your-First-Party-Domain-using-Custom-Endpoints) or a proxy that you host. Defaults to 'fullstory.com', or the region-specific equivalent (for example 'eu1.fullstory.com') when the Org ID carries a region suffix.",
       type: 'string',
       required: false
-    }, 
+    },
     appHost: {
       label: 'App Host',
-      description: "The App Host is used to define the specific base URL for the Fullstory application where session URLs are generated and displayed. Leave blank if using the default value for \"Host\"",
+      description:
+        'The base URL of the Fullstory application, used when generating and displaying session URLs. Only set this if you need a value other than a Fullstory URL, which is rarely the case. Leave blank to use the default for your Org ID.',
       type: 'string',
       required: false
-    }, 
+    },
     script: {
       label: 'Custom Script URL',
-      description: "Optionally specify a custom FullStory script URL. Useful if you are using a proxy. The default is 'edge.fullstory.com/s/fs.js'.",
+      description:
+        "Optionally specify a custom Fullstory script URL. Useful if you are using a proxy. The default is 'edge.fullstory.com/s/fs.js', or the region-specific equivalent (for example 'edge.eu1.fullstory.com/s/fs.js') when the Org ID carries a region suffix.",
       type: 'string',
       required: false
     }
@@ -95,21 +98,16 @@ export const destination: BrowserDestinationDefinition<Settings, FS> = {
     viewedPageV2
   },
   initialize: async ({ settings }, dependencies) => {
-
-    const { 
-      host, 
-      appHost,
-      script
-    } = settings
+    const { host, appHost, script } = settings
 
     const inputOptions = {
-      ...settings, 
+      ...settings,
       ...(host ? { host } : {}),
       ...(appHost ? { appHost } : {}),
       ...(script ? { script } : {})
-    } 
+    }
 
-    initFullStory(inputOptions)
+    initFullstory(inputOptions)
     await dependencies.resolveWhen(() => Object.prototype.hasOwnProperty.call(window, 'FS'), 100)
     return window.FS
   }
