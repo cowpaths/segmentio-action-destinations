@@ -1,5 +1,4 @@
 import { Analytics, Context } from '@segment/analytics-next'
-import fullstory from '..'
 import trackEvent from '../trackEvent'
 import identifyUser from '../identifyUser'
 import viewedPage from '../viewedPage'
@@ -31,15 +30,14 @@ const example: JSONArray = [
   }
 ]
 
-beforeEach(() => {
+let fullstory: typeof import('..').default
+
+beforeEach(async () => {
   jest.restoreAllMocks()
-  delete window._fs_initialized
-  delete window._fs_script
-  delete window._fs_org
-  delete window._fs_namespace
-  if (typeof window._fs_namespace === 'number') {
-    delete window[window._fs_namespace]
-  }
+  // @fullstory/browser 2.1+ keeps its init state in module scope rather than on window._fs_* globals,
+  // so reload the destination (and the SDK with it) to get a fresh, uninitialized SDK for each test.
+  jest.resetModules()
+  fullstory = (await import('..')).default
   // @ts-ignore
   delete window.FS
 })
@@ -48,7 +46,7 @@ describe('#track', () => {
   it('sends record events to fullstory on "event"', async () => {
     const [event] = await fullstory({
       orgId: FakeOrgId,
-      subscriptions: example 
+      subscriptions: example
     })
 
     await event.load(Context.system(), {} as Analytics)

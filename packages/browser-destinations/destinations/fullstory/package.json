@@ -20,7 +20,7 @@
   },
   "typings": "./dist/esm",
   "dependencies": {
-    "@fullstory/browser": "^2.0.3",
+    "@fullstory/browser": "^2.1.2",
     "@segment/actions-core": "^3.179.0",
     "@segment/browser-destination-runtime": "^1.108.0"
   },
