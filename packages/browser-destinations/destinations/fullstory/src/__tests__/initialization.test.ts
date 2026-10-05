@@ -284,6 +284,93 @@ describe('custom domain settings', () => {
     })
   })
 
+  describe('init env settings', () => {
+    // The snippet queues `FS('init', { env })` calls until fs.js loads; each queue entry is [operation, payload, ...].
+    const queuedInitEnv = () =>
+      (window.FS as unknown as { q: Array<[string, { env?: Record<string, unknown> }]> }).q
+        .filter(([operation]) => operation === 'init')
+        .reduce((merged, [, payload]) => ({ ...merged, ...payload.env }), {} as Record<string, unknown>)
+
+    test('passes each init env setting through to the SDK', async () => {
+      const [event] = await fullstory({
+        orgId: 'test-org-id',
+        subscriptions: example as unknown as JSONArray,
+        recordCrossDomainIFrames: true,
+        startCaptureManually: true,
+        cookieDomain: 'app.example.com',
+        assetMapId: 'asset-map-1',
+        sessionUid: 'session-uid-1'
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      expect(initFullstorySpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgId: 'test-org-id',
+          recordCrossDomainIFrames: true,
+          startCaptureManually: true,
+          cookieDomain: 'app.example.com',
+          assetMapId: 'asset-map-1',
+          sessionUid: 'session-uid-1'
+        })
+      )
+    })
+
+    test('maps every setting to the matching init env key', async () => {
+      const [event] = await fullstory({
+        orgId: 'test-org-id',
+        subscriptions: example as unknown as JSONArray,
+        recordCrossDomainIFrames: true,
+        recordOnlyThisIFrame: true,
+        startCaptureManually: true,
+        cookieDomain: 'app.example.com',
+        assetMapId: 'asset-map-1',
+        sessionUid: 'session-uid-1'
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      expect(queuedInitEnv()).toEqual(
+        expect.objectContaining({
+          runInIframe: true,
+          isOuterScript: true,
+          // `startCaptureManually` is the inverse of the API's `captureOnStartup`
+          captureOnStartup: false,
+          cookieDomain: 'app.example.com',
+          assetMapId: 'asset-map-1',
+          sessionUid: 'session-uid-1'
+        })
+      )
+    })
+
+    test('sends no init env values for the default (false or blank) settings', async () => {
+      const [event] = await fullstory({
+        orgId: 'test-org-id',
+        subscriptions: example as unknown as JSONArray,
+        recordCrossDomainIFrames: false,
+        recordOnlyThisIFrame: false,
+        startCaptureManually: false,
+        cookieDomain: '',
+        assetMapId: '',
+        sessionUid: ''
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      const env = queuedInitEnv()
+      for (const key of [
+        'runInIframe',
+        'isOuterScript',
+        'captureOnStartup',
+        'cookieDomain',
+        'assetMapId',
+        'sessionUid'
+      ]) {
+        expect(env).not.toHaveProperty(key)
+      }
+    })
+  })
+
   test('initializes with debug and recordOnlyThisIFrame along with custom settings', async () => {
     const [event] = await fullstory({
       orgId: 'test-org-id',

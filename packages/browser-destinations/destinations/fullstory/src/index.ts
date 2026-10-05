@@ -61,7 +61,8 @@ export const destination: BrowserDestinationDefinition<Settings, FS> = {
       default: false
     },
     recordOnlyThisIFrame: {
-      description: 'Enables Fullstory inside an iframe.',
+      description:
+        'Makes this iFrame the root of its own recording, as its own session. Use this when your app is embedded in an iFrame on a site that does not run Fullstory, or when you want its content sent to a different Fullstory org.',
       label: 'Capture only this iFrame',
       type: 'boolean',
       required: false,
@@ -85,6 +86,42 @@ export const destination: BrowserDestinationDefinition<Settings, FS> = {
       label: 'Custom Script URL',
       description:
         "Optionally specify a custom Fullstory script URL. Useful if you are using a proxy. The default is 'edge.fullstory.com/s/fs.js', or the region-specific equivalent (for example 'edge.eu1.fullstory.com/s/fs.js') when the Org ID carries a region suffix.",
+      type: 'string',
+      required: false
+    },
+    recordCrossDomainIFrames: {
+      label: 'Capture cross-domain iFrames',
+      description:
+        'Lets Fullstory record this page when it runs inside a cross-domain iFrame. Fullstory must also run in the parent page. Understand the [security implications](https://help.fullstory.com/hc/en-us/articles/360020622514-Can-Fullstory-capture-content-that-is-presented-in-iframes) and configure your Content Security Policy frame-ancestors directive before enabling.',
+      type: 'boolean',
+      required: false,
+      default: false
+    },
+    startCaptureManually: {
+      label: 'Start capture manually',
+      description:
+        "When enabled, Fullstory loads but waits for a call to `FS('start')` before it begins capturing. See [Manually Delay Data Capture](https://developer.fullstory.com/browser/v2/auto-capture/capture-data/#manually-delay-data-capture).",
+      type: 'boolean',
+      required: false,
+      default: false
+    },
+    cookieDomain: {
+      label: 'Cookie Domain',
+      description:
+        'Overrides the domain the Fullstory cookie is valid for. By default the cookie is valid for all subdomains of your site; set this to limit it to a specific subdomain. See [Can the Fullstory cookie be associated with a specific subdomain?](https://help.fullstory.com/hc/en-us/articles/360020622874-Can-the-Fullstory-cookie-be-associated-with-a-specific-subdomain)',
+      type: 'string',
+      required: false
+    },
+    assetMapId: {
+      label: 'Asset Map ID',
+      description:
+        'Sets the current asset map ID. Only needed if you upload assets to Fullstory. See [Asset Uploading for Web](https://help.fullstory.com/hc/en-us/articles/4404129191575-Asset-Uploading-for-Web).',
+      type: 'string',
+      required: false
+    },
+    sessionUid: {
+      label: 'Session UID (beta)',
+      description: 'Sets the session UID passed to the Fullstory init operation. This option is in beta.',
       type: 'string',
       required: false
     }
