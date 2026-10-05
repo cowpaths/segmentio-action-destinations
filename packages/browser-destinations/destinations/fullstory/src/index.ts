@@ -9,6 +9,7 @@ import identifyUser from './identifyUser'
 import identifyUserV2 from './identifyUserV2'
 import viewedPage from './viewedPage'
 import viewedPageV2 from './viewedPageV2'
+import startCapture from './startCapture'
 import { defaultValues } from '@segment/actions-core'
 
 declare global {
@@ -100,7 +101,7 @@ export const destination: BrowserDestinationDefinition<Settings, FS> = {
     startCaptureManually: {
       label: 'Start capture manually',
       description:
-        "When enabled, Fullstory loads but waits for a call to `FS('start')` before it begins capturing. See [Manually Delay Data Capture](https://developer.fullstory.com/browser/v2/auto-capture/capture-data/#manually-delay-data-capture).",
+        "When enabled, Fullstory loads but waits for a call to `FS('start')` before it begins capturing. Add a subscription to the Start Capture action, triggered by an event of your choice, to begin capture. See [Manually Delay Data Capture](https://developer.fullstory.com/browser/v2/auto-capture/capture-data/#manually-delay-data-capture).",
       type: 'boolean',
       required: false,
       default: false
@@ -132,7 +133,8 @@ export const destination: BrowserDestinationDefinition<Settings, FS> = {
     identifyUser,
     identifyUserV2,
     viewedPage,
-    viewedPageV2
+    viewedPageV2,
+    startCapture
   },
   initialize: async ({ settings }, dependencies) => {
     const { host, appHost, script } = settings

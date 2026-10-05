@@ -77,7 +77,7 @@
       },
       "startCaptureManually": {
         "label": "Start capture manually",
-        "description": "When enabled, Fullstory loads but waits for a call to `FS('start')` before it begins capturing. See [Manually Delay Data Capture](https://developer.fullstory.com/browser/v2/auto-capture/capture-data/#manually-delay-data-capture).",
+        "description": "When enabled, Fullstory loads but waits for a call to `FS('start')` before it begins capturing. Add a subscription to the Start Capture action, triggered by an event of your choice, to begin capture. See [Manually Delay Data Capture](https://developer.fullstory.com/browser/v2/auto-capture/capture-data/#manually-delay-data-capture).",
         "type": "boolean",
         "required": false,
         "multiple": false,
@@ -684,6 +684,18 @@
           "additionalProperties": false
         }
       }
+    },
+    "startCapture": {
+      "title": "Start Capture",
+      "description": "Starts Fullstory capture by calling `FS('start')`. Use this with the Start capture manually setting to begin capture on an event of your choosing, such as when a user grants consent. It has no effect if capture has already started.",
+      "platform": "web",
+      "defaultSubscription": null,
+      "hidden": false,
+      "hasPerformBatch": false,
+      "syncMode": null,
+      "hooks": null,
+      "dynamicFields": null,
+      "fields": {}
     }
   },
   "presets": [

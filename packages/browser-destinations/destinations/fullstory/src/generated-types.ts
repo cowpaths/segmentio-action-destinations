@@ -30,7 +30,7 @@ export interface Settings {
    */
   recordCrossDomainIFrames?: boolean
   /**
-   * When enabled, Fullstory loads but waits for a call to `FS('start')` before it begins capturing. See [Manually Delay Data Capture](https://developer.fullstory.com/browser/v2/auto-capture/capture-data/#manually-delay-data-capture).
+   * When enabled, Fullstory loads but waits for a call to `FS('start')` before it begins capturing. Add a subscription to the Start Capture action, triggered by an event of your choice, to begin capture. See [Manually Delay Data Capture](https://developer.fullstory.com/browser/v2/auto-capture/capture-data/#manually-delay-data-capture).
    */
   startCaptureManually?: boolean
   /**
