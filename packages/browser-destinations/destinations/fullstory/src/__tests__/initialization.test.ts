@@ -291,6 +291,20 @@ describe('custom domain settings', () => {
         .filter(([operation]) => operation === 'init')
         .reduce((merged, [, payload]) => ({ ...merged, ...payload.env }), {} as Record<string, unknown>)
 
+    const expectNoInitEnvValues = () => {
+      const env = queuedInitEnv()
+      for (const key of [
+        'runInIframe',
+        'isOuterScript',
+        'captureOnStartup',
+        'cookieDomain',
+        'assetMapId',
+        'sessionUid'
+      ]) {
+        expect(env).not.toHaveProperty(key)
+      }
+    }
+
     test('passes each init env setting through to the SDK', async () => {
       const [event] = await fullstory({
         orgId: 'test-org-id',
@@ -357,17 +371,30 @@ describe('custom domain settings', () => {
 
       await event.load(Context.system(), {} as Analytics)
 
-      const env = queuedInitEnv()
+      expectNoInitEnvValues()
+    })
+
+    // Destinations installed before these settings existed have no stored value for any of them.
+    test('sends no init env values, so capture still starts on startup, when the settings are absent', async () => {
+      const [event] = await fullstory({
+        orgId: 'test-org-id',
+        subscriptions: example as unknown as JSONArray
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      const options = initFullstorySpy.mock.calls[0][0]
       for (const key of [
-        'runInIframe',
-        'isOuterScript',
-        'captureOnStartup',
+        'recordCrossDomainIFrames',
+        'recordOnlyThisIFrame',
+        'startCaptureManually',
         'cookieDomain',
         'assetMapId',
         'sessionUid'
       ]) {
-        expect(env).not.toHaveProperty(key)
+        expect(options).not.toHaveProperty(key)
       }
+      expectNoInitEnvValues()
     })
   })
 
