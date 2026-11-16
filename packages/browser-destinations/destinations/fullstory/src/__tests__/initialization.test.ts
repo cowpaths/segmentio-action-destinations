@@ -1,8 +1,6 @@
 import { Analytics, Context } from '@segment/analytics-next'
-import fullstory, { destination } from '..'
 import { Subscription } from '@segment/browser-destination-runtime/types'
 import { JSONArray } from '@segment/actions-core'
-import * as FullStoryTypes from '../types'
 
 const example: Subscription[] = [
   {
@@ -44,16 +42,19 @@ const example: Subscription[] = [
   }
 ]
 
-beforeEach(() => {
+let fullstory: typeof import('..').default
+let destination: typeof import('..').destination
+let FullStoryTypes: typeof import('../types')
+
+beforeEach(async () => {
   jest.restoreAllMocks()
-  // Reset FullStory initialization state
-  delete window._fs_initialized
-  delete window._fs_script
-  delete window._fs_org
-  delete window._fs_namespace
-  if (typeof window._fs_namespace === 'number') {
-    delete window[window._fs_namespace]
-  }
+  // @fullstory/browser 2.1+ keeps its init state in module scope rather than on window._fs_* globals,
+  // so reload the destination (and the SDK with it) to get a fresh, uninitialized SDK for each test.
+  jest.resetModules()
+  const destinationModule = await import('..')
+  fullstory = destinationModule.default
+  destination = destinationModule.destination
+  FullStoryTypes = await import('../types')
   // @ts-ignore
   delete window.FS
 })
@@ -88,7 +89,8 @@ test('can load fullstory', async () => {
     NodeList [
       <script
         crossorigin="anonymous"
-        src="https://edge.fullstory.com/s/fs.js"
+        data-fs-namespace="FS"
+        src="https://edge.fullstory.com/s/fs.js?org=thefullstory.com"
       />,
       <script>
         // the emptiness
@@ -98,10 +100,10 @@ test('can load fullstory', async () => {
 })
 
 describe('custom domain settings', () => {
-  let initFullStorySpy: jest.SpyInstance
+  let initFullstorySpy: jest.SpyInstance
 
   beforeEach(() => {
-    initFullStorySpy = jest.spyOn(FullStoryTypes, 'initFullStory')
+    initFullstorySpy = jest.spyOn(FullStoryTypes, 'initFullstory')
   })
 
   test('initializes with custom host setting', async () => {
@@ -113,7 +115,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    expect(initFullStorySpy).toHaveBeenCalledWith(
+    expect(initFullstorySpy).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'test-org-id',
         host: 'custom-recording.example.com'
@@ -130,7 +132,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    expect(initFullStorySpy).toHaveBeenCalledWith(
+    expect(initFullstorySpy).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'test-org-id',
         appHost: 'app.example.com'
@@ -147,7 +149,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    expect(initFullStorySpy).toHaveBeenCalledWith(
+    expect(initFullstorySpy).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'test-org-id',
         script: 'custom-cdn.example.com/fs.js'
@@ -159,7 +161,8 @@ describe('custom domain settings', () => {
       NodeList [
         <script
           crossorigin="anonymous"
-          src="https://custom-cdn.example.com/fs.js"
+          data-fs-namespace="FS"
+          src="https://custom-cdn.example.com/fs.js?org=test-org-id"
         />,
         <script>
           // the emptiness
@@ -179,7 +182,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    expect(initFullStorySpy).toHaveBeenCalledWith(
+    expect(initFullstorySpy).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'test-org-id',
         host: 'custom-recording.example.com',
@@ -193,7 +196,8 @@ describe('custom domain settings', () => {
       NodeList [
         <script
           crossorigin="anonymous"
-          src="https://custom-cdn.example.com/fs.js"
+          data-fs-namespace="FS"
+          src="https://custom-cdn.example.com/fs.js?org=test-org-id"
         />,
         <script>
           // the emptiness
@@ -210,7 +214,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    const callArgs = initFullStorySpy.mock.calls[0][0]
+    const callArgs = initFullstorySpy.mock.calls[0][0]
     expect(callArgs).toEqual(
       expect.objectContaining({
         orgId: 'test-org-id'
@@ -225,13 +229,173 @@ describe('custom domain settings', () => {
       NodeList [
         <script
           crossorigin="anonymous"
-          src="https://edge.fullstory.com/s/fs.js"
+          data-fs-namespace="FS"
+          src="https://edge.fullstory.com/s/fs.js?org=test-org-id"
         />,
         <script>
           // the emptiness
         </script>,
       ]
     `)
+  })
+
+  describe('region handling', () => {
+    // Snippet 2.1 appends `?org=<orgId>` to the script URL; only the origin and path matter for region handling.
+    const scriptSrcs = () =>
+      Array.from(window.document.querySelectorAll('script[src]')).map((script) => {
+        const { origin, pathname } = new URL(script.getAttribute('src') as string)
+        return origin + pathname
+      })
+
+    test('loads fs.js from the regional edge when the orgId carries a region', async () => {
+      const [event] = await fullstory({
+        orgId: 'o-ABC123-eu1',
+        subscriptions: example as unknown as JSONArray
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      expect(scriptSrcs()).toContain('https://edge.eu1.fullstory.com/s/fs.js')
+    })
+
+    test('leaves a custom proxy script URL untouched for a regional orgId', async () => {
+      const [event] = await fullstory({
+        orgId: 'o-ABC123-eu1',
+        subscriptions: example as unknown as JSONArray,
+        host: 'proxy.example.com',
+        script: 'custom-cdn.example.com/fs.js'
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      expect(scriptSrcs()).toContain('https://custom-cdn.example.com/fs.js')
+      expect(scriptSrcs()).not.toContain('https://edge.eu1.fullstory.com/s/fs.js')
+    })
+
+    test('loads fs.js from the default edge for an na1 orgId', async () => {
+      const [event] = await fullstory({
+        orgId: 'o-ABC123-na1',
+        subscriptions: example as unknown as JSONArray
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      expect(scriptSrcs()).toContain('https://edge.fullstory.com/s/fs.js')
+    })
+  })
+
+  describe('init env settings', () => {
+    // The snippet queues `FS('init', { env })` calls until fs.js loads; each queue entry is [operation, payload, ...].
+    const queuedInitEnv = () =>
+      (window.FS as unknown as { q: Array<[string, { env?: Record<string, unknown> }]> }).q
+        .filter(([operation]) => operation === 'init')
+        .reduce((merged, [, payload]) => ({ ...merged, ...payload.env }), {} as Record<string, unknown>)
+
+    const expectNoInitEnvValues = () => {
+      const env = queuedInitEnv()
+      for (const key of [
+        'runInIframe',
+        'isOuterScript',
+        'captureOnStartup',
+        'cookieDomain',
+        'assetMapId',
+        'sessionUid'
+      ]) {
+        expect(env).not.toHaveProperty(key)
+      }
+    }
+
+    test('passes each init env setting through to the SDK', async () => {
+      const [event] = await fullstory({
+        orgId: 'test-org-id',
+        subscriptions: example as unknown as JSONArray,
+        recordCrossDomainIFrames: true,
+        startCaptureManually: true,
+        cookieDomain: 'app.example.com',
+        assetMapId: 'asset-map-1',
+        sessionUid: 'session-uid-1'
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      expect(initFullstorySpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgId: 'test-org-id',
+          recordCrossDomainIFrames: true,
+          startCaptureManually: true,
+          cookieDomain: 'app.example.com',
+          assetMapId: 'asset-map-1',
+          sessionUid: 'session-uid-1'
+        })
+      )
+    })
+
+    test('maps every setting to the matching init env key', async () => {
+      const [event] = await fullstory({
+        orgId: 'test-org-id',
+        subscriptions: example as unknown as JSONArray,
+        recordCrossDomainIFrames: true,
+        recordOnlyThisIFrame: true,
+        startCaptureManually: true,
+        cookieDomain: 'app.example.com',
+        assetMapId: 'asset-map-1',
+        sessionUid: 'session-uid-1'
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      expect(queuedInitEnv()).toEqual(
+        expect.objectContaining({
+          runInIframe: true,
+          isOuterScript: true,
+          // `startCaptureManually` is the inverse of the API's `captureOnStartup`
+          captureOnStartup: false,
+          cookieDomain: 'app.example.com',
+          assetMapId: 'asset-map-1',
+          sessionUid: 'session-uid-1'
+        })
+      )
+    })
+
+    test('sends no init env values for the default (false or blank) settings', async () => {
+      const [event] = await fullstory({
+        orgId: 'test-org-id',
+        subscriptions: example as unknown as JSONArray,
+        recordCrossDomainIFrames: false,
+        recordOnlyThisIFrame: false,
+        startCaptureManually: false,
+        cookieDomain: '',
+        assetMapId: '',
+        sessionUid: ''
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      expectNoInitEnvValues()
+    })
+
+    // Destinations installed before these settings existed have no stored value for any of them.
+    test('sends no init env values, so capture still starts on startup, when the settings are absent', async () => {
+      const [event] = await fullstory({
+        orgId: 'test-org-id',
+        subscriptions: example as unknown as JSONArray
+      })
+
+      await event.load(Context.system(), {} as Analytics)
+
+      const options = initFullstorySpy.mock.calls[0][0]
+      for (const key of [
+        'recordCrossDomainIFrames',
+        'recordOnlyThisIFrame',
+        'startCaptureManually',
+        'cookieDomain',
+        'assetMapId',
+        'sessionUid'
+      ]) {
+        expect(options).not.toHaveProperty(key)
+      }
+      expectNoInitEnvValues()
+    })
   })
 
   test('initializes with debug and recordOnlyThisIFrame along with custom settings', async () => {
@@ -246,7 +410,7 @@ describe('custom domain settings', () => {
 
     await event.load(Context.system(), {} as Analytics)
 
-    expect(initFullStorySpy).toHaveBeenCalledWith(
+    expect(initFullstorySpy).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: 'test-org-id',
         debug: true,

@@ -1,4 +1,4 @@
-import { FullStory, init as initFullStory } from '@fullstory/browser'
+import { Fullstory, init as initFullstory } from '@fullstory/browser'
 
-export type FS = typeof FullStory
-export { FullStory, initFullStory }
+export type FS = typeof Fullstory
+export { Fullstory, initFullstory }

@@ -18,7 +18,7 @@ export interface Payload {
    */
   email?: string
   /**
-   * The Segment traits to be forwarded to FullStory
+   * The Segment traits to be forwarded to Fullstory
    */
   traits?: {
     [k: string]: unknown

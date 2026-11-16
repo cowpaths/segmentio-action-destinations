@@ -1,5 +1,5 @@
 import { Analytics, Context } from '@segment/analytics-next'
-import fullstory from '..'
+import fullstory, { destination } from '..'
 import trackEventV2 from '../trackEventV2'
 import identifyUserV2 from '../identifyUserV2'
 import viewedPageV2 from '../viewedPageV2'
@@ -42,13 +42,6 @@ const example: Subscription[] = [
 
 beforeEach(() => {
   jest.restoreAllMocks()
-  delete window._fs_initialized
-  delete window._fs_script
-  delete window._fs_org
-  delete window._fs_namespace
-  if (typeof window._fs_namespace === 'number') {
-    delete window[window._fs_namespace]
-  }
   // @ts-ignore
   delete window.FS
 })
@@ -286,5 +279,51 @@ describe('#page', () => {
       },
       'segment-browser-actions'
     )
+  })
+})
+
+describe('#startCapture', () => {
+  const startSubscription: Subscription[] = [
+    {
+      partnerAction: 'startCapture',
+      name: 'Start Capture',
+      enabled: true,
+      subscribe: 'type = "track" and event = "Consent Granted"',
+      mapping: {}
+    }
+  ]
+
+  it('calls FS("start") when its subscription matches', async () => {
+    const [event] = await fullstory({
+      orgId: FakeOrgId,
+      startCaptureManually: true,
+      subscriptions: startSubscription as unknown as JSONArray
+    })
+
+    await event.load(Context.system(), {} as Analytics)
+    expect(window.FS).not.toHaveBeenCalledWith('start')
+
+    await event.track?.(new Context({ type: 'track', event: 'Consent Granted' }))
+
+    expect(window.FS).toHaveBeenCalledWith('start')
+  })
+
+  it('does not start capture for events that do not match its subscription', async () => {
+    const [event] = await fullstory({
+      orgId: FakeOrgId,
+      startCaptureManually: true,
+      subscriptions: startSubscription as unknown as JSONArray
+    })
+
+    await event.load(Context.system(), {} as Analytics)
+    await event.track?.(new Context({ type: 'track', event: 'Something Else' }))
+
+    expect(window.FS).not.toHaveBeenCalledWith('start')
+  })
+
+  it('is not part of the default presets, so capture never starts unprompted', () => {
+    const presetActions = destination.presets?.map((preset) => ('partnerAction' in preset ? preset.partnerAction : ''))
+
+    expect(presetActions).not.toContain('startCapture')
   })
 })
